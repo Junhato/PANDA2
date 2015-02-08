@@ -21,7 +21,7 @@ public class Zoo
   }
 
   public void feed(Animal animal, Food food) {
-    //TODO: Insert code here!
+    animal.eat(food); //Is this it @_@?
   }
 
   public void test1()
