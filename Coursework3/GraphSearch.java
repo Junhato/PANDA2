@@ -9,8 +9,8 @@ public class GraphSearch {
 	private void BubbleSort(Node[] array) {
 
 		Node temp;
-		for (int j=0; j< array.length; j++) {
-			for (int i=0; i< array.length -i; i++) {
+		for (int j=0; j < array.length; j++) {
+			for (int i=0; i < array.length -j - 1; i++) {
 				if (Integer.parseInt(array[i].name()) > Integer.parseInt(array[i+1].name())) {
 				temp = array[i];
 				array[i] = array[i+1];
@@ -31,7 +31,8 @@ public class GraphSearch {
 			BubbleSort(Neighbours);
 			System.out.print(aCopy[i].name() + " ");
 			for (int k = 0; k < Neighbours.length; k++) {
-				System.out.print(Neighbours[k].name() + " ");
+				System.out.print(Neighbours[k].name());
+				if(k != (Neighbours.length -1)) System.out.print(" ");
 			}
 		System.out.println("");
 
@@ -44,7 +45,7 @@ public class GraphSearch {
 	
 	// do the search and fill the output
 	for (Node node : graph.nodes()) {
-            if (node.degree() == n) {
+            if (node.degree() >= n) {
 		    output.add(node);
 	    }
         }
