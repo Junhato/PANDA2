@@ -13,7 +13,7 @@ public class Node
     Node(String n)
     {
         name = n;
-	distance = 10000.0;
+	distance = 1000000.0;
     }
 
     /**

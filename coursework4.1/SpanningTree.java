@@ -44,7 +44,7 @@ public class SpanningTree {
 			switch (arg) {
 				case "-p1":
 				double result = st.test1(graph);
-				System.out.println("Total Cable Needed: " + roundtotwo(result * 1000) + "m");
+				System.out.println("Total Cable Needed: " + String.format("%.2f", roundtotwo(result * 1000)) + "m");
 				break;
 
 				case "-p2":
@@ -60,6 +60,14 @@ public class SpanningTree {
 				weightchange(graph1, 4500, 4000, 1000, 5000);
 				govgraph = st.test3(graph1);
 
+				/*try {
+				Writer writer = new Writer();
+				writer.write("test.txt",govgraph);
+				}
+				catch(IOException e) {
+				System.err.println("IOException");
+				}*/
+
 				Graph graph2 = newgraph(file);
 				weightchange(graph2, 0.2, 0.5, 1, 0);
 				comgraph = st.test3(graph2);
@@ -67,7 +75,8 @@ public class SpanningTree {
 				Graph graph3 = newgraph(file);
 				weightchange(graph3, (1/0.2), (1/0.6), (1/0.9), 0);
 				csgraph = st.test3(graph3);
-				st.test2(govgraph, comgraph, csgraph); 
+
+				st.test2(govgraph, comgraph, csgraph);
 				break;
 
 				default:
@@ -103,9 +112,7 @@ public class SpanningTree {
 				break;
                       
 				default:
-				System.out.
-					
-					println("Should never get here...");
+				System.out.println("Should never get here...");
 				break;
 			}
 		}
@@ -116,7 +123,7 @@ public class SpanningTree {
 		double cs = test1(g3);
 		int idays = (int)cs;
 		double minutes = cs - idays;
-		minutes = (minutes * 1440) + 60;
+		minutes = (minutes * 1440);
 		SimpleDateFormat dateformat = new SimpleDateFormat("EEE d MMMMM yyyy hh:mm");
 		String date = "Sun 15 February 2014 00:00";
 		Calendar calendar = Calendar.getInstance();
@@ -131,41 +138,55 @@ public class SpanningTree {
 		date = dateformat.format(calendar.getTime());
 
 		System.out.println("Price: " + String.format("%.2f", roundtotwo(test1(g1))));
-		System.out.println("Hours of Disrupted Travel: " + roundtotwo(test1(g2)) + "h");
+		System.out.println("Hours of Disrupted Travel: " + String.format("%.2f", roundtotwo(test1(g2))) + "h");
 		System.out.println("Completion Date: " + date.toString());
 	}
 
-	public void updatedistance(Node current, Graph graph) {
+	public void updatedistance(Node current, Graph graph, Graph visited) {
 
-		Node connected;
+		Node connected = null;
 
 		for (Edge e : graph.edges()) {
 
 			if (e.id1().equals(current.name())) {
+				if (!e.id2().equals(visited.find(e.id2())))
 				connected = graph.find(e.id2());
-				if (connected == null) continue;
 			}
 			else if (e.id2().equals(current.name())) {
+				if (!e.id2().equals(visited.find(e.id2())))
 				connected = graph.find(e.id1());
-				if (connected == null) continue;
 			}
 			else continue;
-
-			if (connected.distance() > e.weight()) connected.setdistance(e.weight());
+		//	System.out.println("the other node " + connected.name());
+			if (connected != null && (connected.distance() > e.weight())) connected.setdistance(e.weight());
 		}
 	}
 	
-	public Node min(Graph graph) {
-
-		double min = 10000;
+	public Node min(Graph graph, Graph visited) {
+		double min = 1000000;
 		Node closest = new Node("");
 		for (Node n : graph.nodes()) {
-			if (n.distance() < min) {
-				min = n.distance();
-				closest	= n;
+			if (visited.find(n.name()) == null || !n.name().equals(visited.find(n.name()).name())) {
+				if (n.distance() < min) {
+					min = n.distance();
+					closest	= n;
+				}
 			}			
 		}
 		return closest;
+	}
+
+	public void updateedge(Graph g, Graph visited, Node n) {
+		Edge link;
+
+		for (Node node : visited.nodes()) {
+			link = g.findedge(node, n);
+			if (link != null) {
+				if (link.weight() == n.distance()) {visited.add(link);}
+			g.edges().remove(link);
+			}
+		}
+
 	}
 
 	public Graph test3(Graph g) {
@@ -174,19 +195,14 @@ public class SpanningTree {
 			
 		Node now = g.find("7");
 		Edge link;
-
-		while (g.nodes().size() != 0) {
-			System.out.println(now.name());
-			updatedistance(now, g);	
-			mst.nodes().add(now);
-			//i should always be able to find this edge...
-			link = g.findedge(now, min(g));
-			g.nodes().remove(now);
-			if (link != null) {
-			mst.edges().add(link);
-			g.edges().remove(link);
-			}
-			now = min(g);
+		
+		while (g.nodeNumber() != mst.nodeNumber()) {
+		//	System.out.println("current " + now.name());
+			updatedistance(now, g, mst);
+			mst.add(now);
+			//edge from new selected node to any of the previously visited nodes
+			updateedge(g, mst, now);
+			now = min(g, mst);
 		}
 
 	return mst;

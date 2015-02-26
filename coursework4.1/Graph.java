@@ -1,5 +1,4 @@
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 
 /**
@@ -55,6 +54,7 @@ public class Graph
         {
             if (n.name().equals(name)) return n;
         }
+	//System.out.println("node not found");
         return null;
     }
     
@@ -105,10 +105,20 @@ public class Graph
 
     public Edge findedge(Node start, Node end)
     {
+	List<Edge> multiple = new ArrayList<Edge>();
 	for (Edge edge : edges) {
-		if ((edge.id1().equals(start.name()) && edge.id2().equals(end.name())) || (edge.id2().equals(start.name()) && edge.id1().equals(end.name())))
-			return edge;
+		if ((edge.id1().equals(start.name()) && edge.id2().equals(end.name())) || (edge.id2().equals(start.name()) && edge.id1().equals(end.name()))) {
+			multiple.add(edge);
+		}
 	}
-	return null;
+	if (multiple.size() == 0) return null;
+	else if (multiple.size() == 1) return multiple.get(0);
+	else {
+		Edge theone = multiple.get(0);
+		for (int i=0; i < multiple.size(); i++) {
+			if (multiple.get(i).weight() < theone.weight()) theone = multiple.get(i);
+		}
+		return theone;
+	}
     }
 }
