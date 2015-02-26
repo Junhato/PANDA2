@@ -123,11 +123,11 @@ public class SpanningTree{
 	private Node small;
 	public void Search(Node n, Graph graph){
 		Set<Edge> edges = graph.edges();
-		int w = n.distance();
+		double w;
 		nset.add(n);
-		small = n;
+		double s = 1000;
 		for(Edge edge:edges){
-			w += edge.weight();
+			w = edge.weight();
 			//update the distance
 			if(edge.id1().equals(n.name())){
 				Node x = graph.find(edge.id2());
@@ -137,6 +137,10 @@ public class SpanningTree{
 				/*if (nset.contains(x) == false && (x.distance() < small.distance() || small.equals(n))){
 					small = x;
 				}*/
+			if(x.distance()<s){
+				s = x.distance();
+				small = x;
+			}
 			}
 			else if(edge.id2().equals(n.name())){
 				Node x = graph.find(edge.id1());
@@ -147,16 +151,17 @@ public class SpanningTree{
 				/*if (nset.contains(x) == false && (x.distance() < small.distance() || small.equals(n))){
 					small = x;
 				}*/
-
+			if(x.distance()<s) {
+				s = x.distance();
+				small = x;
 
 			}
 		}
+			}
 		//choose the next node to visit
-		for(Node node:graph.nodes()){
-			if((small.equals(n) || node.distance()<small.distance()) && nset.contains(node) == false && node.distance() != 0){
-				small = node;
-			}
-		}
+
+			
+		
 		/*if(small.equals(n) && n.lastedge() != null){
 	
 			Node id1 = graph.find(n.lastedge().id1());
@@ -191,7 +196,8 @@ public class SpanningTree{
 			small = graph.find("137");
 			//nset.clear();
 			//repeat the prim algorithem number of nodes times
-			for(int i = 0; i <= graph.nodeNumber(); i++){
+			//while(nset.size() != graph.nodes().size()){
+			for(int i=0; i<graph.nodeNumber(); i++){			
 				Node x = small;
 				Search(small, graph);
 				//System.out.println(small);
@@ -214,11 +220,11 @@ public class SpanningTree{
 				eset.add(n.lastedge());
 			}
 		}
-		Set<Edge> es = rute(graph, eset);
+		//Set<Edge> es = rute(graph, eset);
 		//create the newgraph
-		InterestGroups(es);
+		InterestGroups(eset);
 		graph.edges().clear();
-		graph.edges().addAll(es);
+		graph.edges().addAll(eset);
 		Writer newgraph = new Writer();
 		try{
 			newgraph.write("newgraph.txt", graph);
@@ -358,5 +364,4 @@ public class SpanningTree{
 	}
 		
 }
-
 
