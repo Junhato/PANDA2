@@ -13,14 +13,27 @@ public class MrX extends Player {
     private static MrX MrXInstance = null;
 
     private MrX (int location, Map<Ticket, Integer> tickets) {
+	super(location, tickets);
 	this.location = location;
 	this.tickets = tickets;
     }
-
     public static MrX getInstance(int location, Map<Ticket, Integer> tickets) {
 	(if MrXInstance == null) {
 		MrXInstance = new MrX(location, tickets);
 	}
 	return MrXInstance;
+    }
+
+    public int getLocation() {
+	return location;
+    }
+
+    public Map<Ticket, Integer> getTickets() {
+	return tickets;
+    }
+    @Override
+    Move notify(int location, List<Move> list) {
+	//do something
+	return null;
     }
 }

@@ -10,11 +10,16 @@ import java.util.Set;
 public class ScotlandYardModel extends ScotlandYard {
 
     protected int numberOfDetectives;
-    protected List<Boolean> rounds;
+    protected ArrayList<Boolean> rounds;
     private String graphFileName;
     protected Graph<Integer, Route> currentGraph;
     protected MrX _MrX;
-    protected HashMap<Colour, Player> gameMembers;
+    protected Map<Colour, Player> gameMembers;
+    protected int currentRound;
+    protected ArrayList<Colour> orderofPlayer;
+    protected int currentPlayer;
+    protected Move currentmove;
+    protected ArrayList<Move> valid;
 
     public ScotlandYardModel(int numberOfDetectives, List<Boolean> rounds, String graphFileName) throws IOException {
         super(numberOfDetectives, rounds, graphFileName);
@@ -25,19 +30,29 @@ public class ScotlandYardModel extends ScotlandYard {
 	//game initialization
 	this.graphFileName = graphFileName;
 	this.rounds = rounds;
+	totalnbofRounds = rounds.size();
 	currentGraph = readGraph(graphFileName);
 	this.numberOfDetectives = numberOfDetectives;
 	gameMembers = new HashMap<Colour, Player>();
+	orderofPlayer = new ArrayList<Colour>();
     }
 
     @Override
     protected Move getPlayerMove(Colour colour) {
-        return null;
+	if (!colour.equals(orderofPlayer.get(currentPlayer))) {
+		System.out.println("Not this player's turn");
+		return null;
+	}
+	if (valid.contains(gameMembers.get(colour).getMove())) {
+		System.out.println("Invalid move");
+		return null;
+	}
+	return currentmove;
     }
 
     @Override
     protected void nextPlayer() {
-
+	currentPlayer = (currentPlayer + 1) % (numberOfDetectives+1);
     }
 
     @Override
@@ -57,7 +72,20 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     protected List<Move> validMoves(Colour player) {
-        return null;
+	valid = new ArrayList<Move>();
+	int currentPosition = getPlayerLocation(player);
+	//case for Mr.X
+
+	//case for detectives
+	List<Edge<X, Y>> availableRoute = currentGraph.getEdges(Node(currentPosition));
+	for (Edge<X, Y> e: availableRoute) {
+		if (getTickets().get((Ticket)e.data) != 0)
+		valid.add(new MoveTicket(player, (Integer)e.target, (Ticket)e.data));
+	}
+	//add a pass move
+	valid.add(new MovePass(player));
+	currentmove = player.notify(player.getLocation(), valid);
+        return valid;
     }
 
     @Override
@@ -81,19 +109,23 @@ public class ScotlandYardModel extends ScotlandYard {
 			return false;
 		}
 	// testing for two person starting at the same location don't know if it is necessary
-		if (get(c).location == location) {
+		if (get(c).getLocation() == location) {
 			System.out.println("There is already a detective at this location");
 			return false;
 		}
 	}
 	colour.equals(Black) ? gameMembers.put(colour, MrX.getInstance(location, tickets)) : gameMembers.put(colour, new Detective(location, tickets));
+	orderofPlayer.add(colour);
         return true;
     }
 
     @Override
     public List<Colour> getPlayers() {
-	
-        return null;
+	ArrayList<Colour> currentPlayers = new ArrayList<Colour>();
+	for (Color c : gameMembers.keySet()) {
+		currentPlayers.add(c);
+	} 
+        return currentPlayers;
     }
 
     @Override
@@ -103,12 +135,18 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     public int getPlayerLocation(Colour colour) {
-        return 0;
+	if (gameMembers.get(colour) != null) {
+		return gameMembers.get(colour).getLocation();
+	} 
+        return -1;
     }
 
     @Override
     public int getPlayerTickets(Colour colour, Ticket ticket) {
-        return 0;
+	if (gameMembers.get(colour) != null) {
+		return gameMembers.get(colour).getTickets().get(ticket);
+	} 
+        return -1;
     }
 
     @Override
@@ -118,22 +156,26 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     public boolean isReady() {
-
-        return false;
+	if (gameMembers.size() != numberOfDetectives + 1) return false;
+	return true;
     }
 
     @Override
     public Colour getCurrentPlayer() {
-        return null;
+	if (getRound() == 1) {
+		return orderofPlayer.indexOf(Black);
+	}
+	currentPlayer = orderofPlayer.indexOf(currentRound % (numberOfDetectives+1) -1);
+	return orderofPlayer.get(currentPlayer);
     }
 
     @Override
-    public int getRound() {
-        return 0;
+    public int getRound() {	
+        return currentRound;
     }
 
     @Override
     public List<Boolean> getRounds() {
-        return null;
+        return rounds;
     }
 }
