@@ -4,9 +4,13 @@ import scotlandyard.*;
 
 public class SYSpectator implements Spectator {
 
-@override
+public Move currentmove;
+public int location;
+
+@Override
 public void notify(Move move) {
-	
+	 currentmove = move;
+	 location = getPlayerLocation(move.colour);
 }
 
 }

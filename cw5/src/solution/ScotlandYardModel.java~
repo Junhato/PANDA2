@@ -6,20 +6,19 @@ import java.io.IOException;
 import java.util.*;
 
 public class ScotlandYardModel extends ScotlandYard {
-
-    protected int numberOfDetectives;
+//need to be unspecified ie Players and Spectators??
+    protected int numberOfDetectives, currentPlayer, currentRound;
     protected List<Boolean> rounds;
     private String graphFileName;
     protected Graph<Integer, Route> currentGraph;
     protected Map<Colour, SYPlayer> gameMembers;
-    protected int currentRound;
     protected ArrayList<Colour> orderofPlayer;
     private boolean start = false;
-    protected int currentPlayer;
+    protected boolean isWinnerMrX = false;
     protected Move currentmove;
-    protected ArrayList<Move> valid;
+    protected ArrayList<Move> valid, MrXTrace;
     protected SYPlayer MrX;
-    protected ArrayList<SYSpectator> spectators;
+    protected ArrayList<Spectator> spectators;
 
     public ScotlandYardModel(int numberOfDetectives, List<Boolean> rounds, String graphFileName) throws IOException {
         super(numberOfDetectives, rounds, graphFileName);
@@ -36,7 +35,8 @@ public class ScotlandYardModel extends ScotlandYard {
 	this.numberOfDetectives = numberOfDetectives;
 	gameMembers = new HashMap<Colour, SYPlayer>();
 	orderofPlayer = new ArrayList<Colour>();
-	spectators = new ArrayList<SYSpectator>;
+	spectators = new ArrayList<Spectator>();
+	ArrayList<Move> MrXTrace = new ArrayList<Move>() ;
     }
 
     @Override
@@ -72,11 +72,12 @@ public class ScotlandYardModel extends ScotlandYard {
 			MrX.addTicket(move.ticket);
 		}
 		else {
+			MrXTrace.add(move);
 			if(!move.ticket.equals(Ticket.SecretMove)) System.out.println(move.ticket.toString());
-		}
-	currentRound = currentRound + 1;			
+			currentRound = currentRound + 1;
+		}			
 	}
-	for (SYSpectator s : spectators) {
+	for (Spectator s : spectators) {
 		s.notify(move);
 	}
 	nextPlayer();
@@ -97,10 +98,11 @@ public class ScotlandYardModel extends ScotlandYard {
 		MrX.setLocation(second.target, rounds.get(currentRound));
 		MrX.removeTicket(second.ticket);
 		currentRound = currentRound + 1;
+		MrXTrace.add(move);
 		if(!first.ticket.equals(Ticket.SecretMove)) System.out.println(first.ticket.toString());
 		if(!second.ticket.equals(Ticket.SecretMove)) System.out.println(second.ticket.toString());
 	}
-	for (SYSpectator s : spectators) {
+	for (Spectator s : spectators) {
 		s.notify(move);
 	}
 	nextPlayer();
@@ -108,8 +110,8 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     protected void play(MovePass move) {
-	if (getCurrentPlayer().equals(move.colour)) {
-		for (SYSpectator s : spectators) {
+	if (getCurrentPlayer().equals(Colour.Black) && getCurrentPlayer().equals(move.colour)) {
+		for (Spectator s : spectators) {
 			s.notify(move);
 		}
 		nextPlayer();
@@ -118,6 +120,16 @@ public class ScotlandYardModel extends ScotlandYard {
 		System.out.println("Wrong player's move");
 		System.exit(-1);
 	}
+    }
+
+    protected boolean occupied(int location, Colour colour) {
+	    for (Colour c : orderofPlayer) {
+		if (!c.equals(Colour.Black) && !c.equals(colour)) {
+			if (location == getPlayerLocation(c))
+				return true;
+			}
+		}
+    return false;	    
     }
 
     @Override
@@ -129,36 +141,30 @@ public class ScotlandYardModel extends ScotlandYard {
 	for (Edge e: availableRoute) {
 		int nbofticket = currenttickets.get(Ticket.fromRoute((Route)e.data()));
 		if (currenttickets.get(Ticket.fromRoute((Route)e.data())) != null && nbofticket != 0) {
+			int destination = (currentPosition == (int)e.source()) ? (int)e.target() : (int)e.source();
 			//check other player's location except Mr.X
-			for (Colour c : orderofPlayer) {
-				if (!c.equals(Colour.Black) && !c.equals(player)) {
-					if (e.target().equals(getPlayerLocation(c)) || e.source().equals(getPlayerLocation(c)))
-					continue;
-				}
-			}
-			int destination = (currentPosition == (int)e.source()) ? (int)e.source() : (int)e.target();
+			if (occupied(destination, player)) continue;
+
 			MoveTicket single = new MoveTicket(player, destination, Ticket.fromRoute((Route)e.data()));
 			valid.add(single);
-			MoveTicket secret;
+			MoveTicket secret = null;
 			if (player.equals(Colour.Black) && currenttickets.get(Ticket.SecretMove) != 0) {
 				secret = new MoveTicket(player, destination, Ticket.SecretMove);
 				valid.add(secret);
 			}
-		//I need to fix double move target destination choice
+		//make double moves	
 		if (player.equals(Colour.Black) && currenttickets.get(Ticket.DoubleMove) != 0) {
 			for (Edge edge : currentGraph.getEdges((Integer)e.target())) {
+				destination = (destination == (int)edge.source()) ? edge.target() : (int)edge.target();
 			//can Mr.X go somewhere and come back as two moves?
-			//if use the same routetype but only one ticket
 				if (currenttickets.get(Ticket.fromRoute((Route)edge.data())) != 0) {
 					if (e.data().equals(edge.data()) && nbofticket ==1) continue;
-					for (Colour c : orderofPlayer) {
-						if (!c.equals(Colour.Black) && edge.target().equals(getPlayerLocation(c)))
-						continue;
-					}
+					if (occupied(destination, player)) continue;
+
 					MoveTicket firstoption = new MoveTicket(player, (Integer)edge.target(), Ticket.fromRoute((Route)edge.data()));
 					valid.add(new MoveDouble(player, single, firstoption));
 
-					if (currenttickets.get(Ticket.SecretMove) != 0) {
+					if (secret != null && currenttickets.get(Ticket.SecretMove) != 0) {
 						MoveTicket secondoption = new MoveTicket(player, (Integer)edge.target(), Ticket.SecretMove);
 						valid.add(new MoveDouble(player, secret, secondoption));
 					}
@@ -180,7 +186,7 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     public boolean join(Player player, Colour colour, int location, Map<Ticket, Integer> tickets) {
-        if (gameMembers.size() > numberOfDetectives + 1) {
+        if (gameMembers.size() >= numberOfDetectives + 1) {
 		System.out.println("The game is already full");
 		return false;
 	}
@@ -221,7 +227,16 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     public Set<Colour> getWinningPlayers() {
-        return null;
+	Set<Colour> winner = new HashSet<Colour>();
+        if (!isGameOver()) return winner;
+	if (isWinnerMrX) {
+		winner.add(Colour.Black);
+	}
+	else {
+		orderofPlayer.remove(Colour.Black);
+		winner = new HashSet<>(orderofPlayer);
+	}
+	return winner;
     }
 
     @Override
@@ -242,7 +257,24 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     public boolean isGameOver() {
-        return false;
+	if(!isReady()) return false;
+	if (orderofPlayer.get(currentPlayer).equals(Colour.Black) && validMoves(Colour.Black).isEmpty()) return true;
+	if (getPlayerLocation(orderofPlayer.get(currentPlayer)) == getPlayerLocation(Colour.Black)) return true;
+	if (((currentRound + 1) == rounds.size()) && currentPlayer == 0) {
+		isWinnerMrX = true;
+		return true;
+	}
+	for (Colour c : gameMembers.keySet()) {
+		if (!c.equals(Colour.Black)) {
+			 Map<Ticket, Integer> currentTickets = gameMembers.get(c).getTickets();
+			for (Ticket t : currentTickets.keySet()) {
+				if (currentTickets.get(t) != 0) return false;
+			}
+			
+		}
+	}
+	isWinnerMrX = true;
+	return true;
     }
 
     @Override

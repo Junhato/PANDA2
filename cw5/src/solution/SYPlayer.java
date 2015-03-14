@@ -56,7 +56,7 @@ public class SYPlayer implements Player {
     @Override
     public Move notify(int location, List<Move> list) {
 	//for human player?
-	int selection;
+	int selection = 0;
 	System.out.println("Your current location is " + location);
 	System.out.println("Posible moves are: ");
 	int i = 1;
