@@ -13,3 +13,4 @@ public class ScotlandYardApp {
 		view.setVisible(true);
 	}
 }
+
