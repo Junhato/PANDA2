@@ -38,7 +38,6 @@ public class gameView extends JFrame {
 	private JTextArea playerField;
 	private JLabel imageLabel;
 	private BufferedImage img = null;
-	private ImageIcon ico;
 	private Map<Integer, List<Integer>> coordinateMap = new HashMap<Integer, List<Integer>>();
 	private Graphics2D g2d;
 	private ImageIcon icon;
