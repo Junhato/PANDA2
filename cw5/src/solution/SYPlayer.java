@@ -7,33 +7,39 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class SYPlayer implements Player {
+    private Player player;
     private int location;
     private int knownlocation = 0;
     private Map<Ticket, Integer> tickets;
     protected Move choicemove;
-    private boolean MrX;
+    private boolean isMrX;
 
-    public SYPlayer(int location, Map<Ticket, Integer> tickets) {
+    public SYPlayer(Player player, int location, Map<Ticket, Integer> tickets) {
+//where did this first line come from @_@
 	super();
-	this.location = location;
-	this.tickets = tickets;
-	MrX = false;
-    }
-
-    public SYPlayer(int location, Map<Ticket, Integer> tickets, boolean MrX) {
-	super();
+	this.player = player;
 	this.location = location;
 	this.tickets = tickets;	
-	MrX = true;
+	isMrX = false;
     }
 
+    public SYPlayer(Player player, int location, Map<Ticket, Integer> tickets, boolean MrX) {
+//where did this first line come from @_@
+	super();
+	this.player = player;
+	this.location = location;
+	this.tickets = tickets;	
+	isMrX = true;
+    }
     public int getLocation(boolean surface) {
-	if (MrX && !surface) return knownlocation;
+	if (isMrX && !surface) {
+		return knownlocation;
+	}
 	return location;
     }
 
     public void setLocation(int location, boolean surface) {
-	if (MrX && surface) this.knownlocation = location;
+	if (isMrX && surface) this.knownlocation = location;
 	this.location = location;
     }
 
@@ -42,11 +48,11 @@ public class SYPlayer implements Player {
     }
 
     public void removeTicket(Ticket ticket) {
-	tickets.replace(ticket, tickets.get(ticket) - 1);
+	tickets.put(ticket, tickets.get(ticket) - 1);
     }
 
     public void addTicket(Ticket ticket) {
-	tickets.replace(ticket, tickets.get(ticket) + 1);
+	tickets.put(ticket, tickets.get(ticket) + 1);
     }
 
     public Move getMove() {
@@ -56,6 +62,9 @@ public class SYPlayer implements Player {
     @Override
     public Move notify(int location, List<Move> list) {
 	//for human player?
+	this.choicemove = player.notify(location, list);
+	if (choicemove != null) return choicemove;
+	else {/*
 	int selection = 0;
 	System.out.println("Your current location is " + location);
 	System.out.println("Posible moves are: ");
@@ -72,8 +81,10 @@ public class SYPlayer implements Player {
 		if (selection < 0 || selection > i) System.out.println("Invalid choice, please try again");
 		else valid = true;
 	}
-	choicemove = list.get(selection-1);
-	return choicemove;
+	choicemove = list.get(selection-1);*/
+	return null;
+	}
+//	return choicemove;
     }
 
 }

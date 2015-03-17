@@ -6,17 +6,16 @@ import java.io.IOException;
 import java.util.*;
 
 public class ScotlandYardModel extends ScotlandYard {
-//need to be unspecified ie Players and Spectators??
+    //need to be unspecified ie Players and Spectators??
     protected int numberOfDetectives, currentPlayer, currentRound;
     protected List<Boolean> rounds;
     private String graphFileName;
     protected Graph<Integer, Route> currentGraph;
     protected Map<Colour, SYPlayer> gameMembers;
     protected ArrayList<Colour> orderofPlayer;
-    private boolean start = false;
-    protected boolean isWinnerMrX = false;
+    protected boolean isWinnerMrX;
     protected Move currentmove;
-    protected ArrayList<Move> valid, MrXTrace;
+    protected List<Move> MrXTrace;
     protected SYPlayer MrX;
     protected ArrayList<Spectator> spectators;
 
@@ -24,8 +23,9 @@ public class ScotlandYardModel extends ScotlandYard {
         super(numberOfDetectives, rounds, graphFileName);
 	if (numberOfDetectives < 0 || numberOfDetectives > 5) {
 		System.out.println("Number of detectives entered is invalid");
-		System.exit(-1);
+	//	System.exit(-1);
 	}
+	else {
 	//game initialization
 	this.graphFileName = graphFileName;
 	this.rounds = rounds;
@@ -37,32 +37,47 @@ public class ScotlandYardModel extends ScotlandYard {
 	orderofPlayer = new ArrayList<Colour>();
 	spectators = new ArrayList<Spectator>();
 	ArrayList<Move> MrXTrace = new ArrayList<Move>() ;
+	currentPlayer = 0;
+	isWinnerMrX = false;
+	}
     }
 
     @Override
     protected Move getPlayerMove(Colour colour) {
-	//Since I am not checking more here I assume that I give a list of only valid moves.
-	if (!colour.equals(orderofPlayer.get(currentPlayer))) {
+	if (colour == null) {
+		System.out.println("Oops, problem happened");
+		return null;
+	}
+	//add a pass move
+	List<Move> listofvalidmoves = validMoves(colour);
+	if (listofvalidmoves.isEmpty() && !colour.equals(Colour.Black)) listofvalidmoves.add(new MovePass(colour));
+	SYPlayer playing = gameMembers.get(colour);
+	currentmove = playing.notify(playing.getLocation(true), listofvalidmoves);
+	//Since I am not checking more here I assume that I give a list of only valid moves
+	if (!colour.equals(getCurrentPlayer())) {
 		System.out.println("Not this player's turn");
 		return null;
 	}
-	if (valid.contains(gameMembers.get(colour).getMove())) {
+	if (!listofvalidmoves.contains(playing.getMove())) {
 		System.out.println("Invalid move");
 		return null;
 	}
+//the last move in the list should be the pass move
+	if (currentmove == null) return listofvalidmoves.get(listofvalidmoves.size() - 1);
 	return currentmove;
     }
-
+// if I add plus one here and it breaks :(
     @Override
     protected void nextPlayer() {
-	currentPlayer = (currentPlayer + 1) % (numberOfDetectives+1);
+
+	currentPlayer = (currentPlayer + 1) % (numberOfDetectives + 1);
     }
 
     @Override
     protected void play(MoveTicket move) {
 	if (!getCurrentPlayer().equals(move.colour)) {
 		System.out.println("Wrong player's move");
-		System.exit(-1);
+	//	System.exit(-1);
 	}
 	else {
 		SYPlayer current = gameMembers.get(move.colour);
@@ -72,53 +87,39 @@ public class ScotlandYardModel extends ScotlandYard {
 			MrX.addTicket(move.ticket);
 		}
 		else {
-			MrXTrace.add(move);
+			// this line is causing a null point exception MrXTrace.add(move);
 			if(!move.ticket.equals(Ticket.SecretMove)) System.out.println(move.ticket.toString());
+			if (!rounds.get(currentRound)) move = new MoveTicket(move.colour, getPlayerLocation(move.colour), move.ticket);
 			currentRound = currentRound + 1;
 		}			
 	}
 	for (Spectator s : spectators) {
 		s.notify(move);
 	}
-	nextPlayer();
     }
 
     @Override
     protected void play(MoveDouble move) {
-		MoveTicket first = (MoveTicket)move.moves.get(0);
-		MoveTicket second = (MoveTicket)move.moves.get(1);
-	if (!first.colour.equals(Colour.Black) || !first.colour.equals(second.colour) || !getCurrentPlayer().equals(first.colour)) {
-		System.out.println("Wrong player's move");
-		System.exit(-1);
-	}
-	else {
-		MrX.setLocation(first.target, rounds.get(currentRound));
-		MrX.removeTicket(first.ticket);
-		currentRound = currentRound + 1;
-		MrX.setLocation(second.target, rounds.get(currentRound));
-		MrX.removeTicket(second.ticket);
-		currentRound = currentRound + 1;
-		MrXTrace.add(move);
-		if(!first.ticket.equals(Ticket.SecretMove)) System.out.println(first.ticket.toString());
-		if(!second.ticket.equals(Ticket.SecretMove)) System.out.println(second.ticket.toString());
-	}
-	for (Spectator s : spectators) {
+	MoveTicket first = (MoveTicket)move.moves.get(0);
+	MoveTicket second = (MoveTicket)move.moves.get(1);
+
+	for (Spectator s: spectators) {
 		s.notify(move);
 	}
-	nextPlayer();
+	play(first);
+	play(second);
     }
 
     @Override
     protected void play(MovePass move) {
-	if (getCurrentPlayer().equals(Colour.Black) && getCurrentPlayer().equals(move.colour)) {
+	if (!getCurrentPlayer().equals(Colour.Black) && getCurrentPlayer().equals(move.colour)) {
 		for (Spectator s : spectators) {
 			s.notify(move);
 		}
-		nextPlayer();
 	}
 	else {
 		System.out.println("Wrong player's move");
-		System.exit(-1);
+	//	System.exit(-1);
 	}
     }
 
@@ -134,8 +135,8 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     protected List<Move> validMoves(Colour player) {
-	valid = new ArrayList<Move>();
-	int currentPosition = getPlayerLocation(player);
+	List<Move> valid = new ArrayList<Move>();
+	int currentPosition = gameMembers.get(player).getLocation(true);
 	Map<Ticket, Integer> currenttickets = gameMembers.get(player).getTickets();
 	List<Edge<Integer, Route>> availableRoute = currentGraph.getEdges(currentPosition);
 	for (Edge e: availableRoute) {
@@ -154,28 +155,32 @@ public class ScotlandYardModel extends ScotlandYard {
 			}
 		//make double moves	
 		if (player.equals(Colour.Black) && currenttickets.get(Ticket.DoubleMove) != 0) {
-			for (Edge edge : currentGraph.getEdges((Integer)e.target())) {
-				destination = (destination == (int)edge.source()) ? (int)edge.target() : (int)edge.source();
+			int newPosition = destination;
+			for (Edge edge : currentGraph.getEdges(destination)) {
+				
+				destination = (newPosition == (int)edge.source()) ? (int)edge.target() : (int)edge.source();
 			//can Mr.X go somewhere and come back as two moves?
 				if (currenttickets.get(Ticket.fromRoute((Route)edge.data())) != 0) {
 					if (e.data().equals(edge.data()) && nbofticket ==1) continue;
 					if (occupied(destination, player)) continue;
 
-					MoveTicket firstoption = new MoveTicket(player, (Integer)edge.target(), Ticket.fromRoute((Route)edge.data()));
+					MoveTicket firstoption = new MoveTicket(player, destination, Ticket.fromRoute((Route)edge.data()));
 					valid.add(new MoveDouble(player, single, firstoption));
 
-					if (secret != null && currenttickets.get(Ticket.SecretMove) != 0) {
-						MoveTicket secondoption = new MoveTicket(player, (Integer)edge.target(), Ticket.SecretMove);
-						valid.add(new MoveDouble(player, secret, secondoption));
+					if (secret != null) valid.add(new MoveDouble(player, secret, firstoption));
+					MoveTicket secondoption = null;
+					if (currenttickets.get(Ticket.SecretMove) != 0) {
+						secondoption = new MoveTicket(player, destination, Ticket.SecretMove);
+						valid.add(new MoveDouble(player, single, secondoption));
 					}
+					if (secret != null && secondoption != null && ((int)currenttickets.get(Ticket.SecretMove) -1 > 0))
+						valid.add(new MoveDouble(player, secret, secondoption));
 				}
 			}
 		}
 		}
 	}
-	//add a pass move
-	if (!player.equals(Colour.Black)) valid.add(new MovePass(player));
-	currentmove = gameMembers.get(player).notify(gameMembers.get(player).getLocation(true), valid);
+	
         return valid;
     }
 
@@ -210,11 +215,11 @@ public class ScotlandYardModel extends ScotlandYard {
 		}
 	}
 	if (colour.equals(Colour.Black)) {
-		MrX = new SYPlayer(location, tickets, true);
+		MrX = new SYPlayer(player, location, tickets, true);
 		gameMembers.put(colour, MrX);
 	}
 	else {
-		gameMembers.put(colour, new SYPlayer(location, tickets));
+		gameMembers.put(colour, new SYPlayer(player, location, tickets));
 	}
 	orderofPlayer.add(colour);
 	return true;
@@ -233,8 +238,10 @@ public class ScotlandYardModel extends ScotlandYard {
 		winner.add(Colour.Black);
 	}
 	else {
-		orderofPlayer.remove(Colour.Black);
-		winner = new HashSet<>(orderofPlayer);
+		for (Colour c : orderofPlayer) {
+			if(!c.equals(Colour.Black))
+			winner.add(c);
+		}
 	}
 	return winner;
     }
@@ -257,20 +264,32 @@ public class ScotlandYardModel extends ScotlandYard {
 
     @Override
     public boolean isGameOver() {
+	int counter = 0;
 	if(!isReady()) return false;
-	if (orderofPlayer.get(currentPlayer).equals(Colour.Black) && validMoves(Colour.Black).isEmpty()) return true;
-	if (getPlayerLocation(orderofPlayer.get(currentPlayer)) == getPlayerLocation(Colour.Black)) return true;
+	if (getCurrentPlayer().equals(Colour.Black) && validMoves(Colour.Black).isEmpty()) return true;
+	if (!getCurrentPlayer().equals(Colour.Black)
+	&&  getPlayerLocation(getCurrentPlayer()) == gameMembers.get(Colour.Black).getLocation(true)) return true;
 	if (((currentRound + 1) == rounds.size()) && currentPlayer == 0) {
 		isWinnerMrX = true;
 		return true;
 	}
-	for (Colour c : gameMembers.keySet()) {
+	//if (getCurrentPlayer().equals
+	for (Colour c : orderofPlayer) {
 		if (!c.equals(Colour.Black)) {
-			 Map<Ticket, Integer> currentTickets = gameMembers.get(c).getTickets();
+		Map<Ticket, Integer> currentTickets = gameMembers.get(c).getTickets();
 			for (Ticket t : currentTickets.keySet()) {
-				if (currentTickets.get(t) != 0) return false;
+				if (currentTickets.get(t) != 0) counter++;
 			}
-			
+		}
+	}
+	if (counter == 0) {
+		isWinnerMrX = true;
+		return true;
+	}
+	for (Colour c : orderofPlayer) {
+		if (!c.equals(Colour.Black)) {
+
+			if (!validMoves(c).isEmpty()) return false;
 		}
 	}
 	isWinnerMrX = true;
@@ -280,17 +299,13 @@ public class ScotlandYardModel extends ScotlandYard {
     @Override
     public boolean isReady() {
 	if (gameMembers.size() != numberOfDetectives + 1) return false;
-	start = true;
 	return true;
     }
 
     @Override
     public Colour getCurrentPlayer() {
-	if (getRound() == 0 && start) {
-		currentPlayer = orderofPlayer.indexOf(Colour.Black);
-		start = false;
-	}
-	return orderofPlayer.get(currentPlayer);
+
+	return orderofPlayer.get(this.currentPlayer);
     }
 
     @Override
