@@ -15,7 +15,7 @@ public class gameController {
 		view.setTurn(model.getCurrentPlayer());
 		view.setRound(model.getRound());
 		String tickets = "";
-		for(Colour c:model.getPlayers())Û
+		for(Colour c:model.getPlayers())
 			tickets += c.toString() + "has\n";
 			playerTickets = c.getTickets();
 			tickets += "Taxi ticket:" + playerTickets.get(Ticket Taxi)+ "\n";
