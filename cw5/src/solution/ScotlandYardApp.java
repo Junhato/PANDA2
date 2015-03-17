@@ -8,9 +8,9 @@ import scotlandyard.*;
 
 public class ScotlandYardApp {
 	public static void main (String[] args) {
-		gameView view = new gameView();
- 		gameController controller = new gameController(view);
-		view.setVisible(true);
+		
+ 		gameStart start = new gameStart();
+ 		gameStartController startController = new gameStartController(start);
+		start.setVisible(true);
 	}
 }
-
