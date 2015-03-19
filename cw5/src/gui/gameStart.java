@@ -13,43 +13,34 @@ public class gameStart extends JFrame{
 	private JButton addButton;
 	private JTextArea colourField;
 	private JTextArea locationField;
-	private ImageIcon icon;
-	private BufferedImage img = null;
 	private String[] colours = {"Black", "Blue", "Green", "Red", "White", "Yellow"};
-	private String[] locations = {"67", "13", "46", "89", "111", "140"};
+	private Integer[] locations = {67, 13, 46, 89, 111, 140};
 	private JPanel comboPanel;
 	private JPanel fieldPanel;
 	private JPanel playerPanel;
 	private JComboBox<String> colourCombo;
-	private JComboBox<String> locationCombo;
-	
+	private JComboBox<Integer> locationCombo;
+	private JButton mapButton;
 	public gameStart(){
 		Font font2 = new Font("Verdana", Font.PLAIN, 15);
 
 		colourField = new JTextArea();
 		locationField = new JTextArea();
 		
-		colourField.setText("Black\n");
+		colourField.setText("Black");
 		colourField.setMaximumSize(new Dimension(Integer.MAX_VALUE, colourField.getPreferredSize().height) );
 		colourField.setFont(font2);
 		colourField.setEditable(false);
 		
-		locationField.setText("67\n");
+		locationField.setText("67");
 		locationField.setMaximumSize(new Dimension(Integer.MAX_VALUE, locationField.getPreferredSize().height) );
 		locationField.setFont(font2);
 		locationField.setEditable(false);
 
 		addButton = new JButton("add");
 		startButton = new JButton("start");
-		
-		JLabel imageLabel = new JLabel();
-		setImage();
-		icon = new ImageIcon(img);
-		imageLabel.setIcon(icon);
-		
-		JPanel imagePanel = new JPanel();
-		imagePanel.add(imageLabel);
-		
+		mapButton = new JButton("map");
+
 		comboPanel = new JPanel();
 		addCombobox();
 		comboPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, comboPanel.getPreferredSize().height) );
@@ -69,34 +60,21 @@ public class gameStart extends JFrame{
 		fieldPanel.add(playerPanel);
 		fieldPanel.add(comboPanel);
 		fieldPanel.add(addButton);
-		
+		fieldPanel.add(mapButton);
+
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  		this.setSize(1200, 900);
-		this.setLayout(new BorderLayout());
-		this.add(imagePanel, BorderLayout.CENTER);
-		this.add(fieldPanel, BorderLayout.EAST);
+		//this.setLayout(new BorderLayout());
+		this.add(fieldPanel);
 	}
-	public void setImage(){
-	try
-		{
-			img = ImageIO.read(new File("map.jpg"));
-			//g2d = img.createGraphics();
-
-		}
-		catch( IOException e )
-		{
-			System.out.println(e);
-		}
-	}
-
 	public void addCombobox(){
 	//comboPanel.removeAll();
 
     colourCombo = new JComboBox<String>(colours);
     colourCombo.setPreferredSize(new Dimension(80, 30));
 
-    locationCombo = new JComboBox<String>(locations);
+    locationCombo = new JComboBox<Integer>(locations);
     locationCombo.setPreferredSize(new Dimension(80, 30));
 
 
@@ -126,17 +104,22 @@ public class gameStart extends JFrame{
 	public void addStartListener(ActionListener listenStartButton){
 		startButton.addActionListener(listenStartButton);
 	}
+
+	public void addMapListener(ActionListener listenMapButton){
+		mapButton.addActionListener(listenMapButton);
+	}
+
 	public String getColour(){
 		return (String)colourCombo.getSelectedItem();
 	} 
-	public String getStartLocation(){
-		return(String)locationCombo.getSelectedItem();
+	public int getStartLocation(){
+		return(int)locationCombo.getSelectedItem();
 	}
 	public void addText(String colour, String location){
-		colourField.append(colour +"\n");
+		colourField.append("\n" + colour);
 		colourField.setMaximumSize(new Dimension(Integer.MAX_VALUE, colourField.getPreferredSize().height) );
 		
-		locationField.append(location + "\n");
+		locationField.append("\n" + location);
 		locationField.setMaximumSize(new Dimension(Integer.MAX_VALUE, locationField.getPreferredSize().height) );
 		playerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, playerPanel.getPreferredSize().height) );
 
@@ -146,6 +129,9 @@ public class gameStart extends JFrame{
 	public void disapper(){
 		this.setVisible(false);
 	}
-
+	public void removeAddButton(){
+		fieldPanel.remove(addButton);
+	}
+		
 
 }
