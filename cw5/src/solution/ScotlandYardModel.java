@@ -317,4 +317,9 @@ public class ScotlandYardModel extends ScotlandYard {
     public List<Boolean> getRounds() {
         return rounds;
     }
+    	//add method
+	public Map<Colour, SYPlayer> getMembers(){
+		return gameMembers;
+	}
+
 }
