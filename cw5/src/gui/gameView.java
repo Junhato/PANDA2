@@ -1,6 +1,6 @@
 package solution;
 
-import scotlandyard.*;
+//import scotlandyard.*;
 import java.awt.event.ActionListener;
 
 import java.awt.BasicStroke;
@@ -123,7 +123,7 @@ public class gameView extends JFrame {
 
 		readFile();
 		resetImage();
-		setImage("Bule", 2);
+		//setImage("Bule", 2);
 		imagePanel.add(imageLabel);
 		this.add(movePanel, BorderLayout.EAST);
 		this.add(topPanel, BorderLayout.NORTH);
@@ -140,7 +140,7 @@ public void addMoveListener(ActionListener listenMoveButton) {
 } 
 
 public void readFile(){
-	File file = new File("pos.txt");	
+	File file = new File("../resources/pos.txt");	
 		Scanner in = null;
         try 
         {
@@ -154,6 +154,7 @@ public void readFile(){
         
         // get the number of nodes
         String topLine = in.nextLine();
+	
         int numberOfNodes = Integer.parseInt(topLine);
         
         
@@ -177,7 +178,7 @@ public void readFile(){
 public void resetImage(){
 	try
 		{
-			img = ImageIO.read(new File("map.jpg"));
+			img = ImageIO.read(new File("../resources/map.jpg"));
 			g2d = img.createGraphics();
 
 		}
@@ -194,7 +195,23 @@ public void resetImage(){
 }
 public void setImage(String colour, int location){
 	List<Integer> pos = coordinateMap.get(location);
-        g2d.setColor(Color.BLUE);
+	try{
+	Color color;
+	Field field = Class.forName("java.awt.Color").getField(colour.toLowerCase()); 
+	color = (Color)field.get(null);
+        g2d.setColor(color);
+
+	}
+	catch(ClassNotFoundException e){
+		System.err.println(e);
+	}
+	catch(NoSuchFieldException e){
+		System.err.println(e);
+	}
+	catch(IllegalAccessException e){
+		System.err.println(e);
+	}
+
 	System.out.println(g2d);
 
 	g2d.drawOval(pos.get(0)-15, pos.get(1)-15, 30, 30);
@@ -204,7 +221,7 @@ public void setImage(String colour, int location){
 	
 }
 public void setStatus(boolean status){
-	if(status) statusField.setText("Playing     ");
+	if(status == false) statusField.setText("Playing     ");
 	else statusField.setText("The Grame is over");
 	statusField.setEditable(false);
 	statusField.setMaximumSize(new Dimension(Integer.MAX_VALUE, statusField.getPreferredSize().height) );
@@ -273,12 +290,8 @@ public void addTickets(String player, String inf){
 	//playerPanel.add(ticketsPanel);
 
 }
-public void setMrX(/*ArrayList<Ticket> tickets*/ String MrXTickets){
-	/*String MrXTickets = "MrX used\n";
-	for(int i = 0; i<tickets.size(); i++){
-		MrXTickets += tickets[i] + "at Round " + (i + 1);
-	}*/
-	MrXField.setText(MrXTickets);
+public void setMrX(String MrXTickets){
+	MrXField.append(MrXTickets);
 	MrXField.setEditable(false);
 	MrXField.setMaximumSize(new Dimension(Integer.MAX_VALUE, MrXField.getPreferredSize().height+10) );
 
@@ -305,4 +318,3 @@ public int getMove(){
 
 
 }
-
