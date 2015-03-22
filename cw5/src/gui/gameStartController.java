@@ -25,16 +25,16 @@ public class gameStartController {
 		Player player5 = new SYPlayer();
 		players = Arrays.asList(player1, player2, player3, player4, player5);
 		
-		mrxTickets.put(Ticket.Taxi, 3);
-		mrxTickets.put(Ticket.Bus, 3);
-		mrxTickets.put(Ticket.Underground, 3);
+		mrxTickets.put(Ticket.Taxi, 11);
+		mrxTickets.put(Ticket.Bus, 8);
+		mrxTickets.put(Ticket.Underground, 4);
 		mrxTickets.put(Ticket.DoubleMove, 3);
 		mrxTickets.put(Ticket.SecretMove, 3);
 
 
-		detectiveTickets.put(Ticket.Taxi, 3);
-		detectiveTickets.put(Ticket.Bus, 3);
-		detectiveTickets.put(Ticket.Underground, 3);
+		detectiveTickets.put(Ticket.Taxi, 11);
+		detectiveTickets.put(Ticket.Bus, 8);
+		detectiveTickets.put(Ticket.Underground, 4);
 
 		this.sview.addListener(new AddListener());
 		this.sview.addStartListener(new startListener());
