@@ -1,3 +1,24 @@
+package solution;
+
+//import scotlandyard.*;
+import java.awt.event.ActionListener;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.image.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.Image;
+
+import java.io.*;
+import java.text.*;
+import java.util.*;
+
+import javax.imageio.*;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
