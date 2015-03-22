@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class ScotlandYardModel extends ScotlandYard {
-    //need to be unspecified ie Players and Spectators??
+    //Spectators??
     protected int numberOfDetectives, currentPlayer, currentRound;
     protected List<Boolean> rounds;
     private String graphFileName;
@@ -18,12 +18,12 @@ public class ScotlandYardModel extends ScotlandYard {
     protected List<Move> MrXTrace;
     protected SYPlayer MrX;
     protected ArrayList<Spectator> spectators;
+    protected ArrayList<Integer> initiallocation;
 
     public ScotlandYardModel(int numberOfDetectives, List<Boolean> rounds, String graphFileName) throws IOException {
         super(numberOfDetectives, rounds, graphFileName);
 	if (numberOfDetectives < 0 || numberOfDetectives > 5) {
 		System.out.println("Number of detectives entered is invalid");
-	//	System.exit(-1);
 	}
 	else {
 	//game initialization
@@ -39,6 +39,7 @@ public class ScotlandYardModel extends ScotlandYard {
 	ArrayList<Move> MrXTrace = new ArrayList<Move>() ;
 	currentPlayer = 0;
 	isWinnerMrX = false;
+	initiallocation = new ArrayList<Integer>();
 	}
     }
 
@@ -66,18 +67,20 @@ public class ScotlandYardModel extends ScotlandYard {
 	if (currentmove == null) return listofvalidmoves.get(listofvalidmoves.size() - 1);
 	return currentmove;
     }
-// if I add plus one here and it breaks :(
     @Override
     protected void nextPlayer() {
 
 	currentPlayer = (currentPlayer + 1) % (numberOfDetectives + 1);
     }
 
+    protected void previousPlayer() {
+	if (currentPlayer == 0) currentPlayer = numberOfDetectives;
+	else currentPlayer = currentPlayer - 1;
+    }
     @Override
     protected void play(MoveTicket move) {
 	if (!getCurrentPlayer().equals(move.colour)) {
 		System.out.println("Wrong player's move");
-	//	System.exit(-1);
 	}
 	else {
 		SYPlayer current = gameMembers.get(move.colour);
@@ -89,6 +92,7 @@ public class ScotlandYardModel extends ScotlandYard {
 		else {
 			// this line is causing a null point exception MrXTrace.add(move);
 			if(!move.ticket.equals(Ticket.SecretMove)) System.out.println(move.ticket.toString());
+			//to notify spectator with correct location of Mr.X
 			if (!rounds.get(currentRound)) move = new MoveTicket(move.colour, getPlayerLocation(move.colour), move.ticket);
 			currentRound = currentRound + 1;
 		}			
@@ -119,7 +123,6 @@ public class ScotlandYardModel extends ScotlandYard {
 	}
 	else {
 		System.out.println("Wrong player's move");
-	//	System.exit(-1);
 	}
     }
 
@@ -222,6 +225,7 @@ public class ScotlandYardModel extends ScotlandYard {
 		gameMembers.put(colour, new SYPlayer(player, location, tickets));
 	}
 	orderofPlayer.add(colour);
+	initiallocation.add(location);
 	return true;
     }
 
@@ -273,7 +277,6 @@ public class ScotlandYardModel extends ScotlandYard {
 		isWinnerMrX = true;
 		return true;
 	}
-	//if (getCurrentPlayer().equals
 	for (Colour c : orderofPlayer) {
 		if (!c.equals(Colour.Black)) {
 		Map<Ticket, Integer> currentTickets = gameMembers.get(c).getTickets();
