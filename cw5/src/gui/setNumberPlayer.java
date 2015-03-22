@@ -45,4 +45,25 @@ public class setNumberPlayer extends JFrame{
 
 		numberPanel.add(new JLabel("How many are playing?"));
 		comboPanel.add(numberField);
-		numbe
+		numberPanel.add(comboPanel);
+		numberPanel.add(numberButton);
+
+		numberPanel.add(loadButton);
+		this.add(numberPanel);
+		//this.add(numberButton);
+		
+
+	}
+
+	public int getNumber(){
+		return (int) numberField.getSelectedItem();
+	}
+
+	public void addNumberListener(ActionListener listenNumberButton) {
+
+		numberButton.addActionListener(listenNumberButton);
+	} 
+	public void addLoadListener(ActionListener listenLoadButton){
+		loadButton.addActionListener(listenLoadButton);
+	}
+}
