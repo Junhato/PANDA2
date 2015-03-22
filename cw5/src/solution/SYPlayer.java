@@ -15,8 +15,6 @@ public class SYPlayer implements Player {
     private boolean isMrX;
 
     public SYPlayer(Player player, int location, Map<Ticket, Integer> tickets) {
-//where did this first line come from @_@
-	super();
 	this.player = player;
 	this.location = location;
 	this.tickets = tickets;	
@@ -24,8 +22,6 @@ public class SYPlayer implements Player {
     }
 
     public SYPlayer(Player player, int location, Map<Ticket, Integer> tickets, boolean MrX) {
-//where did this first line come from @_@
-	super();
 	this.player = player;
 	this.location = location;
 	this.tickets = tickets;	
@@ -61,30 +57,11 @@ public class SYPlayer implements Player {
 
     @Override
     public Move notify(int location, List<Move> list) {
-	//for human player?
+	if (player != null) {
 	this.choicemove = player.notify(location, list);
-	if (choicemove != null) return choicemove;
-	else {/*
-	int selection = 0;
-	System.out.println("Your current location is " + location);
-	System.out.println("Posible moves are: ");
-	int i = 1;
-	boolean valid = false;
-	for (Move m : list) {
-		System.out.println("(" + i + ") " + m.toString());
-		i++;	
 	}
-	System.out.println("Please enter your choice (integer number): ");
-	while (!valid) {
-		Scanner KeyboardIn = new Scanner(System.in);
-		selection = KeyboardIn.nextInt();
-		if (selection < 0 || selection > i) System.out.println("Invalid choice, please try again");
-		else valid = true;
-	}
-	choicemove = list.get(selection-1);*/
-	return null;
-	}
-//	return choicemove;
+	else choicemove = null;
+	return choicemove;
     }
 
 }

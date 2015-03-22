@@ -9,13 +9,13 @@ public class ScotlandYardModel extends ScotlandYard {
     //Spectators??
     protected int numberOfDetectives, currentPlayer, currentRound;
     protected List<Boolean> rounds;
-    private String graphFileName;
+    protected String graphFileName;
     protected Graph<Integer, Route> currentGraph;
     protected Map<Colour, SYPlayer> gameMembers;
     protected ArrayList<Colour> orderofPlayer;
     protected boolean isWinnerMrX;
     protected Move currentmove;
-    protected List<Move> MrXTrace;
+    protected List<String> MrXTrace;
     protected SYPlayer MrX;
     protected ArrayList<Spectator> spectators;
     protected ArrayList<Integer> initiallocation;
@@ -36,7 +36,7 @@ public class ScotlandYardModel extends ScotlandYard {
 	gameMembers = new HashMap<Colour, SYPlayer>();
 	orderofPlayer = new ArrayList<Colour>();
 	spectators = new ArrayList<Spectator>();
-	ArrayList<Move> MrXTrace = new ArrayList<Move>() ;
+	MrXTrace = new ArrayList<String>() ;
 	currentPlayer = 0;
 	isWinnerMrX = false;
 	initiallocation = new ArrayList<Integer>();
@@ -90,11 +90,12 @@ public class ScotlandYardModel extends ScotlandYard {
 			MrX.addTicket(move.ticket);
 		}
 		else {
-			// this line is causing a null point exception MrXTrace.add(move);
 			if(!move.ticket.equals(Ticket.SecretMove)) System.out.println(move.ticket.toString());
+			else MrX.removeTicket(move.ticket);
 			//to notify spectator with correct location of Mr.X
 			if (!rounds.get(currentRound)) move = new MoveTicket(move.colour, getPlayerLocation(move.colour), move.ticket);
 			currentRound = currentRound + 1;
+			MrXTrace.add(move.toString());
 		}			
 	}
 	for (Spectator s : spectators) {
@@ -112,6 +113,7 @@ public class ScotlandYardModel extends ScotlandYard {
 	}
 	play(first);
 	play(second);
+	MrX.removeTicket(move.ticket)
     }
 
     @Override
@@ -315,6 +317,10 @@ public class ScotlandYardModel extends ScotlandYard {
     public int getRound() {	
         return currentRound;
     }
+
+    public void setRound(int round) {
+	currentRound = round;
+   }
 
     @Override
     public List<Boolean> getRounds() {

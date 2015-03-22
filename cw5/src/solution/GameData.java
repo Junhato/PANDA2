@@ -4,6 +4,7 @@
 //String current = "" + game.gameMembers.(move.colour).getLocation();
 //saveGame(current + move.toString());
 //the location before move is the first element
+//what does a pass move do now?
 
 package solution;
 
@@ -11,11 +12,13 @@ import scotlandyard.*;
 
 import java.util.Scanner;
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
-public class MovewLocation {
-     Move move;
-     int location;
+public class GameData {
+
+     static class MovewLocation {
+	Move move;
+	int location;
 
      MovewLocation(Move move, int location) {
 	this.move = move;
@@ -30,11 +33,9 @@ public class MovewLocation {
      }
 }
 
-public class GameData {
-
     int save;
     ScotlandYardModel CurrentGame;
-    ArrayList<String> SavedData;
+    static ArrayList<String> SaveData;
     //Map<String, Integer> Saves;
 
     private static GameData GDInstance = null;
@@ -42,22 +43,21 @@ public class GameData {
     private GameData(ScotlandYardModel game) {
         CurrentGame = game;
 	try {
-	File file = new File("save0.txt");
-	Scanner in = new Scanner(file);
-	String savecount = in.nextLine();
-	save = Integer.parseInt(savecount);
-	in.close();
-
+		File file = new File("save0.txt");
+		Scanner in = new Scanner(file);
+		String savecount = in.nextLine();
+		save = Integer.parseInt(savecount);
+		in.close();
 	} catch (Exception e) { save = 0; }
 //if there is no save file then save = 0;
 	SaveData = new ArrayList<String>();
 	String initial = initialization(game);
-	SavaData.add(initial);
+	SaveData.add(initial);
     }
 
     public static GameData getInstance(ScotlandYardModel game) {
 	if (GDInstance == null) {
-		GDInstance = new GDInstance(game);
+		GDInstance = new GameData(game);
 	}
 	return GDInstance;
     }
@@ -83,7 +83,7 @@ public class GameData {
 	return start;
     }
 
-    MovewLocation ToMove(String str) {
+   public static MovewLocation toMove(String str) {
 	Move ticket = null;
        	String[] ticketparts = str.split(" ");
 	if (ticketparts[2].equals("Pass")) ticket = new MovePass(Colour.valueOf(ticketparts[3]));
@@ -99,13 +99,13 @@ public class GameData {
 	else {
 		MoveTicket one = new MoveTicket(Colour.valueOf(ticketparts[1]), Integer.parseInt(ticketparts[2]), Ticket.valueOf(ticketparts[3]));
 	}
-	int location = ticketparts[0];
+	int location = Integer.parseInt(ticketparts[0]);
 	
 	return new MovewLocation(ticket, location);
     }
 
-    public static void saveGame(String s) {
-	SavaData.add(s);
+    public void saveGame(String s) {
+	SaveData.add(s);
     }
 
     public void saveGame() {
@@ -125,6 +125,7 @@ public class GameData {
     public static ScotlandYardModel loadGame(int save) {
 // read save catalogue first	    
 // read file, start the game and play all moves
+	ScotlandYardModel game = null;
 	try {
 		File file = new File("save" + save + ".txt");
 		Scanner in = new Scanner(file);
@@ -140,53 +141,84 @@ public class GameData {
 			rounds.add(Boolean.valueOf(initialparts[3 + i]));
 		}
 		i = i + 3;	
-		ScotlandYardModel game = new ScotlandYardModel(Integer.parseInt(initialparts[0]), rounds, initialparts[1]);
+		game = new ScotlandYardModel(Integer.parseInt(initialparts[0]), rounds, initialparts[1]);
+		int k = Integer.parseInt(initialparts[i]);
+		for (int j = 0; j < k; j++) {
 
-		for (int j = 0; j < Integer.parseInt(initialparts[i]); j++) {
-			game.join(Colour.valueOf(initialparts[i + j]), ;
+				SYPlayer player = null;
+				Map<Ticket, Integer> Tickets = new HashMap<Ticket, Integer>();
+				Tickets.put(Ticket.Taxi, 11);
+				Tickets.put(Ticket.Bus, 8);
+				Tickets.put(Ticket.Underground, 5);
+
+			if (Colour.valueOf(initialparts[i + j]).equals(Colour.Black)) {
+
+				Tickets.put(Ticket.DoubleMove, 3);
+				Tickets.put(Ticket.SecretMove, 3);	
+			}
+			game.join(player, Colour.valueOf(initialparts[i + j]), Integer.parseInt(initialparts[i+k+j]), Tickets);
 		}
-	//check isready??
-		for (int k = 1; k < SaveData.size(); k++) {
-			MovewLocation = toMove(SaveData.get(k));
-			game.play(MovewLocation.getM);
+	//check isready
+	if (!game.isReady()) System.out.println("problem loading the game");
+	else {
+		for (int j = 1; j < SaveData.size(); j++) {
+
+			MovewLocation amove = toMove(SaveData.get(j));
+			if (amove.getM() instanceof MoveDouble) {
+				MoveDouble m = (MoveDouble)amove.getM();
+				game.play(m);
+			}
+			else if (amove.getM() instanceof MoveTicket) {
+			       MoveTicket m =(MoveTicket)amove.getM();
+			       game.play(m);
+			}
+			else {
+				MovePass m = (MovePass)amove.getM();
+				game.play(m);
+			}
 		}
+	}
 
 	} catch (Exception e) { System.err.println("file does not exist"); }
+	return game;
     }
 
-   /*public void undolastmove() {
+   public void undolastmove() {
 	if (SaveData.size() == 0) {
 		System.out.println("no move has been played yet");
 	}
 	else {
-		MovewLocation current = ToMove(SavedData.get(SavedData.size() -1));
-		if (current.getM instanceof MovePass) return;
-		else if (current.getM instanceof MoveDouble) {
-			MoveTicket first = (MoveTicket)current.getM.moves.get(0);
-			MoveTicket second = (MoveTicket)current.getM.moves.get(1);
-			undolastmove(second, first.target);
-			undolastmove(first, current.getL);
-			SavedData.remove(SavedData.size() -1);
+		MovewLocation current = toMove(SaveData.get(SaveData.size() -1));
+		if (current.getM() instanceof MovePass) return;
+		else if (current.getM() instanceof MoveDouble) {
+			MoveDouble m = (MoveDouble)current.getM();
+			MoveTicket first = (MoveTicket)m.moves.get(0);
+			MoveTicket second = (MoveTicket)m.moves.get(1);
+			replaylastmove(second, first.target);
+			replaylastmove(first, current.getL());
+			SaveData.remove(SaveData.size() -1);
 		}
 		else {
-			undolastmove(current.getM, current.getL);
-			SavedData.remove(SavedData.size() -1);
+			MoveTicket m = (MoveTicket)current.getM();
+			replaylastmove(m, current.getL());
+			SaveData.remove(SaveData.size() -1);
 		}
 	}
     }
     public void replaylastmove(Move move, int returnto) {
 	if (move == null) return;
-	else {
-		game.previousPlayer();
-		SYPlayer current = game.gameMembers.get(move.colour);
-		current.setLocation(returnto, rounds.get(currentRound - 1));
-		current.addTicket(move.ticket);
-		if (!move.colour.equals(Colour.Black))  {
-			MrX.removeTicket(move.ticket);
+	else if (move instanceof MoveTicket) {
+		MoveTicket m = (MoveTicket)move;
+		CurrentGame.previousPlayer();
+		SYPlayer current = CurrentGame.gameMembers.get(m.colour);
+		current.setLocation(returnto, CurrentGame.getRounds().get(CurrentGame.getRound()- 1));
+		current.addTicket(m.ticket);
+		if (!m.colour.equals(Colour.Black))  {
+			CurrentGame.MrX.removeTicket(m.ticket);
 		}
 		else {
-			currentRound = currentRound - 1;
+			CurrentGame.setRound(CurrentGame.getRound() - 1);
 		}
 	}
-    }*/	
+    }
 }    
