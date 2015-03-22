@@ -107,6 +107,7 @@ public class gameController {
 			
 		}
 		this.view.addFinishListener(new finishListener());
+		this.view.addSaveListener(new saveListener()
 		//view.setMoveArea(moveString);
 		//button.addActionListener(new moveListener());
 
