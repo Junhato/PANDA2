@@ -10,12 +10,13 @@ public class setNumberController {
 	public setNumberController(setNumberPlayer setNumber) {
 		this.setNumber = setNumber;
 		this.setNumber.addNumberListener(new numberListener());
+		this.setNumber.addLoadListener(new loadListener());
 	}
 
 class numberListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
 		setNumber.setVisible(false);
-		List<Boolean> rounds = Arrays.asList(true, false);
+		List<Boolean> rounds = Arrays.asList(false, false, true, false, false, false, false, true, false, false, false, false, true, false, false, false, false, true, false, false, false);
 		try{
 			model = new ScotlandYardModel(setNumber.getNumber() - 1, rounds, "../resources/graph.txt");
 		}
@@ -28,6 +29,17 @@ class numberListener implements ActionListener {
 
 	}
 
+}
+class loadListener implements ActionListener {
+	public void actionPerformed(ActionEvent actionEvent) { 
+		//make model 
+		//model = ...
+		setNumber.setVisible(false);
+		
+		gameView view = new gameView();
+		gameController controller = new gameController(model, view);
+		view.setVisible(true);
+}
 }
 
 }
