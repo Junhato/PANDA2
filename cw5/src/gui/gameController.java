@@ -246,7 +246,6 @@ class okListener implements ActionListener {
 			button.addActionListener(new moveListener());
 
 		}
-		view.setMoveArea(moveString);
 		view.resetMrX();
 		int iMrX = 1;
 		//write tickets MrX used in MrXField
