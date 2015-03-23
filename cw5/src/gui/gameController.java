@@ -25,9 +25,11 @@ public class gameController {
 	private JFrame frame;
 	private JCheckBox check;
 	private ArrayList<String> MrXmoves = new ArrayList<String>();
-	public gameController(ScotlandYardModel model, gameView view) {
+	private GameData currentGD;
+	public gameController(ScotlandYardModel model, gameView view, GameData currentGD) {
 		this.model = model;
 		this.view = view;
+		this.currentGD = currentGD;
 		//this.view.addMoveListener(new moveListener());
 		this.players = model.getPlayers();
 		for(Colour player:players){
@@ -107,20 +109,15 @@ public class gameController {
 			
 		}
 		this.view.addFinishListener(new finishListener());
+		this.view.addSaveListener(new saveListener());
 		//view.setMoveArea(moveString);
 		//button.addActionListener(new moveListener());
-
-
-
 	}	
-class replayListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			
-	}
-}
+
 
 class saveListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
+	public void actionPerformed(ActionEvent e){
+		currentGD.saveGame();
 	}
 }
 
@@ -156,6 +153,7 @@ class okListener implements ActionListener {
 		frame.setVisible(false);
 		//index = view.getMove(); 
 		Move chosenMove = moves.get(index);
+		currentGD.saveGame("" + model.gameMembers.get(model.getCurrentPlayer()).getLocation(true) + " " + chosenMove.toString());
 		/*if(model.getCurrentPlayer().equals(Colour.Black)){
 			if(model.getRounds().get(model.getRound()) == true){
 				if (chosenMove instanceof MoveTicket) {
@@ -192,7 +190,7 @@ class okListener implements ActionListener {
 
 		if(model.isGameOver()){
 
-			if(model.getWinningPlayers().contains(Colour.Black)) statusFrame = view.setStatus("MrX WIN !!");
+			if(model.getWinningPlayers().contains(Colour.Black)) view.setStatus("MrX WIN !!");
 			else view.setStatus("Detectives WIN !!");
 		}
 		else if(!model.isGameOver()){
@@ -201,7 +199,7 @@ class okListener implements ActionListener {
 		
 		System.out.println(model.isGameOver());
 		if(model.isGameOver()){
-			if(model.getWinningPlayers().contains(Colour.Black)) statusFrame = view.setStatus("MrX WIN !!");
+			if(model.getWinningPlayers().contains(Colour.Black)) view.setStatus("MrX WIN !!");
 			else view.setStatus("Detectives WIN !!");
 		}
 	
