@@ -39,7 +39,7 @@ public class gameController {
 			view.setImage(player.toString(), location);
 		}
 
-		view.setStatus(model.isGameOver());
+		//view.setStatus(model.isGameOver());
 		view.setTurn(model.getCurrentPlayer().toString());
 		view.setRound(1);
 		this.members = model.getMembers();
@@ -107,7 +107,6 @@ public class gameController {
 			
 		}
 		this.view.addFinishListener(new finishListener());
-		this.view.addSaveListener(new saveListener()
 		//view.setMoveArea(moveString);
 		//button.addActionListener(new moveListener());
 
@@ -135,6 +134,8 @@ class finishListener implements ActionListener{
 }
 class playerListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
+			view.repaint();
+
 			view.setTickets();
 					int in = Integer.parseInt(e.getActionCommand());
 					String tickets = "";
@@ -155,7 +156,7 @@ class okListener implements ActionListener {
 		frame.setVisible(false);
 		//index = view.getMove(); 
 		Move chosenMove = moves.get(index);
-		if(model.getCurrentPlayer().equals(Colour.Black)){
+		/*if(model.getCurrentPlayer().equals(Colour.Black)){
 			if(model.getRounds().get(model.getRound()) == true){
 				if (chosenMove instanceof MoveTicket) {
 					model.play((MoveTicket) chosenMove);
@@ -183,12 +184,30 @@ class okListener implements ActionListener {
 				}
 			}
 		}
-		else{
+		else{*/
 		if (chosenMove instanceof MoveTicket) model.play((MoveTicket) chosenMove);
 		if (chosenMove instanceof MoveDouble) model.play((MoveDouble) chosenMove);
 		if (chosenMove instanceof MovePass) model.play((MovePass) chosenMove);
+		//}
+
+		if(model.isGameOver()){
+
+			if(model.getWinningPlayers().contains(Colour.Black)) statusFrame = view.setStatus("MrX WIN !!");
+			else view.setStatus("Detectives WIN !!");
 		}
+		else if(!model.isGameOver()){
 		model.nextPlayer();
+		
+		
+		System.out.println(model.isGameOver());
+		if(model.isGameOver()){
+			if(model.getWinningPlayers().contains(Colour.Black)) statusFrame = view.setStatus("MrX WIN !!");
+			else view.setStatus("Detectives WIN !!");
+		}
+	
+		else if(!model.isGameOver()){
+		view.repaint();
+
 		view.resetImage();
 		for(Colour player:players){
 			int location = (int) model.getPlayerLocation(player);
@@ -198,7 +217,7 @@ class okListener implements ActionListener {
 			view.setImage(player.toString(), location);
 
 		}
-		view.setStatus(model.isGameOver());
+		//view.setStatus(model.isGameOver());
 		view.setTurn(model.getCurrentPlayer().toString());
 		view.setRound(model.getRound());
 		view.setTickets();
@@ -235,18 +254,22 @@ class okListener implements ActionListener {
 				//if(ticket.equals(Ticket.SecretMove) && t == target) continue;
 				target = a;
 			}
-			if (move instanceof MoveDouble) {
+			else if (move instanceof MoveDouble) {
 				List<Move> list = ((MoveDouble) move).moves;
 				int a = ((MoveTicket) list.get(1)).target;
 				//if(a == target) continue;
 				target = a;
 				ticket = Ticket.DoubleMove;
 			}
-			if (move instanceof MovePass){
+			else if (move instanceof MovePass){
 				button = view.drawPass((int) members.get(model.getCurrentPlayer()).getLocation(true), i-1);
+				button.addActionListener(new moveListener());
+
+				continue;
 			}
 
-			
+			else continue;
+
 			view.drawMove(model.getCurrentPlayer().toString(), target, (int) members.get(model.getCurrentPlayer()).getLocation(true));
 			if(ticket.equals(Ticket.DoubleMove)) {
 				button = view.drawDouble(target, i-1);
@@ -263,11 +286,13 @@ class okListener implements ActionListener {
 		view.setMoveArea(moveString);
 		view.resetMrX();
 		int iMrX = 1;
-		for (String s:MrXmoves){
+		for (String s:model.MrXTrace){
 			
-			view.setMrX("Round" + iMrX + ": " + s);
+			view.setMrX("Round" + iMrX + ": " + s + "\n");
+			iMrX++;
 		}
-
+		}
+		}
 	}
 }
 class moveListener implements ActionListener {
@@ -285,16 +310,16 @@ class moveListener implements ActionListener {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
  		//this.setSize(1200, 900);
 		frame.setMinimumSize(new Dimension(200, 100));
-		JPanel text = new JPanel();
+		/*JPanel text = new JPanel();
 		text.setLayout(new BoxLayout(text, BoxLayout.PAGE_AXIS));
 		text.add(field);
-		if(model.getCurrentPlayer().equals(Colour.Black) && model.getPlayerTickets(Colour.Black, Ticket.SecretMove) > 0){
+		/*if(model.getCurrentPlayer().equals(Colour.Black) && model.getPlayerTickets(Colour.Black, Ticket.SecretMove) > 0){
 			check = new JCheckBox("Use SecretMove?", false);
 			text.add(check);
-		}
+		}*/
 		//frame.setLayout(new BoxLayout(frame, BoxLayout.PAGE_AXIS));
 		frame.setLayout(new BorderLayout());
-		frame.add(text, BorderLayout.CENTER);	
+		frame.add(field, BorderLayout.CENTER);	
 		JButton okButton = new JButton("ok");
 		okButton.addActionListener(new okListener());
 		okButton.setSize(100, 30);
