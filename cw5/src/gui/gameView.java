@@ -465,7 +465,7 @@ public void setTickets(){
 }
 //set text of tickets player hava in ticketsField
 public void addTickets(String player, String inf){
-	JTextArea ticketsField = new textArea();
+	JTextArea ticketsField = new JTextArea();
 	ticketsField.repaint();
 
 	ticketsField.setBackground(new Color(255, 175, 175, 200));
@@ -508,7 +508,7 @@ public JButton addPlayerButton(String colour, int i){
 //reset MrXField
 public void resetMrX(){
 	movePanel.remove(MrXField);
-	MrXField = new textArea();
+	MrXField = new JTextArea();
 	MrXField.setBackground(new Color(250, 250, 250, 200));
 
 	MrXField.setText("MrX move\n");
