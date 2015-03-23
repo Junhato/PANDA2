@@ -6,10 +6,10 @@ import java.lang.reflect.Field;
 import java.lang.*;
 import java.util.*;
 import java.util.Random;
-//import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
+//make player to join 
 public class gameStartController {
 	private gameStart sview;
 	private ScotlandYardModel model;
@@ -50,17 +50,20 @@ public class gameStartController {
 		this.sview.addMapListener(new mapListener());
 		this.sview.addSecretListener(new secretListener());
 
-
+		//choose start position using random number
 		randomInt = randomGenerator.nextInt(startCard);
+		//MrX join the game
 		this.model.join(MrX, Colour.Black, locations.get(randomInt), mrxTickets);
 		mrxLocation = locations.get(randomInt);
 		locations.remove(randomInt);
 		startCard -= 1;
 	}
+//get MrX's starting position
 	public int getMrXLocation(){
 		return mrxLocation;
 	}
-
+//action listener for secretButton
+//show MrX's starting position in new frame
 class secretListener implements ActionListener{
 	public void actionPerformed(ActionEvent actionEvent){
 		String show = "MrX's Starting position:" + mrxLocation;
@@ -75,7 +78,8 @@ class secretListener implements ActionListener{
 		location.setVisible(true);
 	}
 }
-
+//action listener for add button
+//make selected player to join
 class AddListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
 		Colour colour = Colour.Black;		
@@ -112,6 +116,9 @@ class AddListener implements ActionListener {
 	}
 
 }
+//action listener for startButton
+//make this frame invisibel
+//show next frame to play the game
 class startListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent){
 		sview.disapper();
@@ -120,6 +127,8 @@ class startListener implements ActionListener {
  		view.setVisible(true);
 	} 
 }
+//action listener for mapButton
+//show map
 class mapListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
 		openMap Map = new openMap();
