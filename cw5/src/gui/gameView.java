@@ -54,7 +54,7 @@ public class gameView extends JFrame {
 	private Image londonbus;
 	private Image taxi;
 	private JPanel imagePanel;
-	private JButton replayButton;
+
 	private JButton saveButton;
 	private JButton finishButton;
 	private JButton newButton;
@@ -88,7 +88,7 @@ public class gameView extends JFrame {
 		MrXField  = new JTextArea();
 		MrXField.setMaximumSize(new Dimension(Integer.MAX_VALUE, MrXField.getPreferredSize().height) );
 		MrXField.setFont(font2);
-		setMrX("a");
+
 		playerField = new JTextArea();
 		playerField.setMaximumSize(new Dimension(Integer.MAX_VALUE, playerField.getPreferredSize().height) );
 		playerField.setFont(font2);
@@ -146,7 +146,7 @@ public class gameView extends JFrame {
 		//this.setBackground(Color.WHITE);
 		this.setContentPane(back);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 		this.setSize(1200, 900);
+ 		this.setSize(1400, 1000);
 		//this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		back.setLayout(new BorderLayout());
 		playerPanel1.setLayout(new FlowLayout());
@@ -154,8 +154,8 @@ public class gameView extends JFrame {
 
 		//displayPanel.setLayout(BoxLayout.Y_AXIS);
 		imageLabel.add(statusField);
-		roundField.setBackground(new Color(0, 250, 200, 200));
-		turnField.setBackground(new Color(0, 250, 200, 200));
+		roundField.setBackground(new Color(255, 175, 175, 200));
+		turnField.setBackground(new Color(255, 175, 175, 200));
 		playerField.setBackground(new Color(250, 250, 250, 200));
 		MrXField.setBackground(new Color(250, 250, 250, 200));
 
@@ -167,8 +167,7 @@ public class gameView extends JFrame {
 		movePanel.add(playerPanel2);
 		movePanel.add(MrXField);
 
-		replayButton = new JButton("Replay");
-		replayButton.setBackground(Color.WHITE);
+		
 		saveButton = new JButton("Save Game");
 		saveButton.setBackground(Color.WHITE);
 
@@ -178,7 +177,7 @@ public class gameView extends JFrame {
 		newButton = new JButton("New Game");
 		newButton.setBackground(Color.WHITE);
 
-		topPanel.add(replayButton);
+		
 		topPanel.add(saveButton);
 		topPanel.add(finishButton);
 		//playerPanel.add(MrXField);
@@ -206,9 +205,7 @@ public void addNewListener(ActionListener listenNewButton) {
 	newButton.addActionListener(listenNewButton);
 }
 
-public void addReplayListener(ActionListener listenReplayButton) {
-	replayButton.addActionListener(listenReplayButton);
-}
+
 public void addSaveListener(ActionListener listenSaveButton) {
 	saveButton.addActionListener(listenSaveButton);
 }
@@ -505,7 +502,7 @@ public void addTickets(String player, String inf){
 	JTextArea ticketsField = new textArea();
 	ticketsField.repaint();
 
-	ticketsField.setBackground(new Color(0, 200, 250, 200));
+	ticketsField.setBackground(new Color(255, 175, 175, 200));
 	ticketsField.setFont(font2);
 
 	ticketsField.setText(inf);
