@@ -113,7 +113,7 @@ public class ScotlandYardModel extends ScotlandYard {
 	}
 	play(first);
 	play(second);
-	MrX.removeTicket(move.ticket)
+	MrX.removeTicket(Ticket.DoubleMove);
     }
 
     @Override
