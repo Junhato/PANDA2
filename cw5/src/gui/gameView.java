@@ -1,6 +1,5 @@
 package solution;
 
-//import scotlandyard.*;
 import java.awt.event.ActionListener;
 
 import java.awt.BasicStroke;
@@ -33,6 +32,8 @@ import java.awt.event.*;
 import java.lang.reflect.Field;
 import java.lang.*;
 
+//frame for palying game
+
 public class gameView extends JFrame {
 	private JTextArea statusField;
 	private JTextArea turnField;
@@ -61,37 +62,30 @@ public class gameView extends JFrame {
 	private JPanel movePanel;
 	private Font font2;
 	private JFrame statusFrame;
-	//private Font font1;
+
  	public gameView(){
 		font2 = new Font("Verdana", Font.BOLD, 15);
 		Font font3 = new Font("Verdana", Font.BOLD, 20);
 		Font font4 = new Font("Verdana", Font.BOLD, 30);
 
-		statusField  = new textArea();
+		statusField  = new JTextArea();
 		statusField.setMaximumSize(new Dimension(Integer.MAX_VALUE, statusField.getPreferredSize().height) );
 		statusField.setFont(font3);
 
 		
 		
-		turnField  = new textArea();
+		turnField  = new JTextArea();
 		turnField.setMaximumSize(new Dimension(Integer.MAX_VALUE, turnField.getPreferredSize().height) );
 		turnField.setFont(font3);
 
-		roundField  = new textArea();
+		roundField  = new JTextArea();
 		roundField.setMaximumSize(new Dimension(Integer.MAX_VALUE, roundField.getPreferredSize().height) );
 		roundField.setFont(font4);
 
-		/*ticketsField  = new JTextArea();
-		ticketsField.setMaximumSize(new Dimension(Integer.MAX_VALUE, ticketsField.getPreferredSize().height) );
-		ticketsField.setFont(font2);*/
-
+		
 		MrXField  = new JTextArea();
 		MrXField.setMaximumSize(new Dimension(Integer.MAX_VALUE, MrXField.getPreferredSize().height) );
 		MrXField.setFont(font2);
-
-		playerField = new JTextArea();
-		playerField.setMaximumSize(new Dimension(Integer.MAX_VALUE, playerField.getPreferredSize().height) );
-		playerField.setFont(font2);
 
 		imageLabel = new JLabel();
 		imageLabel.setBackground(Color.WHITE);
@@ -118,17 +112,13 @@ public class gameView extends JFrame {
 		ticketsPanel.setLayout(new BoxLayout(ticketsPanel, BoxLayout.PAGE_AXIS));
 
 
-		//playerPanel.setBackground(Color.WHITE);
 		playerPanel1.setOpaque(false);
 		playerPanel2.setOpaque(false);
 		topPanel.setOpaque(false);
 		movePanel.setOpaque(false);
 		imagePanel.setOpaque(false);
 
-		//topPanel.setBackground(Color.WHITE);
-		//movePanel.setBackground(Color.WHITE);
-		//imagePanel.setBackground(Color.WHITE);
-		
+		//make background
 		Image image = null;
 		try
 		{
@@ -143,20 +133,17 @@ public class gameView extends JFrame {
 		}
 
 		JLabel back = new JLabel(new ImageIcon(image));
-		//this.setBackground(Color.WHITE);
 		this.setContentPane(back);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  		this.setSize(1400, 1000);
-		//this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
 		back.setLayout(new BorderLayout());
 		playerPanel1.setLayout(new FlowLayout());
 		movePanel.setLayout(new BoxLayout(movePanel, BoxLayout.PAGE_AXIS));
 
-		//displayPanel.setLayout(BoxLayout.Y_AXIS);
 		imageLabel.add(statusField);
 		roundField.setBackground(new Color(255, 175, 175, 200));
 		turnField.setBackground(new Color(255, 175, 175, 200));
-		playerField.setBackground(new Color(250, 250, 250, 200));
 		MrXField.setBackground(new Color(250, 250, 250, 200));
 
 		movePanel.add(roundField);
@@ -174,50 +161,38 @@ public class gameView extends JFrame {
 		finishButton = new JButton("New Game");
 		finishButton.setBackground(Color.WHITE);
 
-		newButton = new JButton("New Game");
-		newButton.setBackground(Color.WHITE);
-
+		
 		
 		topPanel.add(saveButton);
 		topPanel.add(finishButton);
-		//playerPanel.add(MrXField);
-		//playerPanel.add(playerField);
 		
-		//movePanel.add(moveArea);
-		//movePanel.add(moveField);
-		//movePanel.add(moveButton);
-
 		readFile();
 		resetImage();
 		createImage();
-		//setImage("Bule", 2);
 		imagePanel.add(imageLabel);
 		this.add(movePanel, BorderLayout.EAST);
 		this.add(topPanel, BorderLayout.NORTH);
-		//this.add(playerPanel, BorderLayout.WEST);
 		this.add(imagePanel, BorderLayout.CENTER);
-		//this.add(back);
 
 
 		
 	}
-public void addNewListener(ActionListener listenNewButton) {
-	newButton.addActionListener(listenNewButton);
-}
 
-
+//add action listener to saveButton
 public void addSaveListener(ActionListener listenSaveButton) {
 	saveButton.addActionListener(listenSaveButton);
 }
+//add action listener to finishButton
 public void addFinishListener(ActionListener listenFinishButton) {
 	finishButton.addActionListener(listenFinishButton);
 }
-
+//add action listener to moveButton
 public void addMoveListener(ActionListener listenMoveButton) {
 
 	moveButton.addActionListener(listenMoveButton);
 } 
 
+//read pos.txt to get coordinate
 public void readFile(){
 	File file = new File("../resources/pos.txt");	
 		Scanner in = null;
@@ -253,7 +228,7 @@ public void readFile(){
         	coordinateMap.put(key, pos);
         }
 }
-
+//set map image
 public void resetImage(){
 	try
 		{
@@ -273,6 +248,7 @@ public void resetImage(){
 	imageLabel.removeAll();
 
 }
+//create imaage for underground, bus and taxi
 public void createImage(){
 	
 	try{
@@ -291,7 +267,7 @@ public void createImage(){
 	}
 
 }
-
+//draw circle at the position of player
 public void setImage(String colour, int location){
 	List<Integer> pos = coordinateMap.get(location);
 	try{
@@ -319,6 +295,7 @@ public void setImage(String colour, int location){
 
 	
 }
+//draw line for valid moves
 public void drawMove(String colour, int target, int location){
 	List<Integer> p = coordinateMap.get(location);
 	List<Integer> t = coordinateMap.get(target);
@@ -347,88 +324,79 @@ public void drawMove(String colour, int target, int location){
 	icon = new ImageIcon(img);
 	imageLabel.setIcon(icon);
 }
-
+//draw button for move using underground
 public JButton drawUnderground(int location, int index){
 	List<Integer> p = coordinateMap.get(location);
 	JButton button = new JButton(String.valueOf(location), new ImageIcon(underground));
 
 	button.setBounds(p.get(0)-10, p.get(1)-30, 100, 20);
-	//g2d.drawImage(londonbus, p.get(0)+10, p.get(1)-40, null);
-	//g2d.drawImage(taxi, p.get(0)-70, p.get(1)-40, null);
 	button.setActionCommand(String.valueOf(index));
-	//button.setContentAreaFilled(false);
 	button.setBackground(Color.WHITE);
 
 	imageLabel.add(button);
 
-
-	//icon = new ImageIcon(img);
-	//imageLabel.setIcon(icon);
 	return button;
 
 }
+//draw button for move using bus
 public JButton drawLondonbus(int location, int index){
 	List<Integer> p = coordinateMap.get(location);
 	JButton button = new JButton(String.valueOf(location), new ImageIcon(londonbus));
 
 	button.setBounds(p.get(0), p.get(1)-40, 100, 20);
 	button.setActionCommand(String.valueOf(index));
-	//button.setContentAreaFilled(false);
 	button.setBackground(Color.WHITE);
 
 	imageLabel.add(button);
 	return button;
 }
+// draw button for move using taxi
 public JButton drawTaxi(int location, int index){
 	List<Integer> p = coordinateMap.get(location);
-	//JLabel label = new JLabel(String.valueOf(location));
 	JButton button = new JButton(String.valueOf(location), new ImageIcon(taxi));
 	button.setBounds(p.get(0)-30, p.get(1)-30, 100, 20);
 	button.setActionCommand(String.valueOf(index));
-	//button.setContentAreaFilled(false);
 	button.setBackground(Color.WHITE);
 	imageLabel.add(button);
 	return button;
 }
-
+//draw button for secret move
 public JButton drawSecret(int location, int index){
 	List<Integer> p = coordinateMap.get(location);
 	JButton button = new JButton("S " + String.valueOf(location));
 
 	button.setBounds(p.get(0)+10, p.get(1)-40, 80, 20);
 	button.setActionCommand(String.valueOf(index));
-	//button.setContentAreaFilled(false);
 	button.setBackground(Color.LIGHT_GRAY);
 
 	imageLabel.add(button);
 	return button;
 }
-
+//draw button for double move
 public JButton drawDouble(int location, int index){
 	List<Integer> p = coordinateMap.get(location);
 	JButton button = new JButton("D " + String.valueOf(location));
 
 	button.setBounds(p.get(0)-20, p.get(1)-30, 80, 20);
 	button.setActionCommand(String.valueOf(index));
-	//button.setContentAreaFilled(false);
 	button.setBackground(Color.GRAY);
 
 	imageLabel.add(button);
 	return button;
 }
+//draw button to pass
 public JButton drawPass(int location, int index){
 	List<Integer> p = coordinateMap.get(location);
 	JButton button = new JButton("Pass" );
 
 	button.setBounds(p.get(0), p.get(1)-20, 80, 20);
 	button.setActionCommand(String.valueOf(index));
-	//button.setContentAreaFilled(false);
 	button.setBackground(Color.YELLOW);
 
 	imageLabel.add(button);
 	return button;
 }
-
+//make frame to tell the winner when the game is over
 public JFrame setStatus(String s){
 	statusFrame = new JFrame();
 	statusFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -452,12 +420,13 @@ public JFrame setStatus(String s){
 	return statusFrame;
 		
 }
+//action listener to close status frame
 class newListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) {
 		statusFrame.setVisible(false);
 	}
 }
-
+//set text of whose turn in turnField
 public void setTurn(String player){
 	turnField.setText(player + "'s turn");
 	turnField.setEditable(false);
@@ -481,6 +450,7 @@ public void setTurn(String player){
 
 
 }
+//set text of round in roundField
 public void setRound(int round){
 	roundField.setText("Round" + round +"              ");
 	roundField.setEditable(false);
@@ -488,16 +458,12 @@ public void setRound(int round){
 
 
 }
+//reset the tickets panel
 public void setTickets(){
 	ticketsPanel.removeAll();
-	ticketsPanel.setBackground(new Color(250, 250, 250, 100));
-
-	//ticketsPanel = new JPanel();
-	//ticketsPanel.setLayout(new BoxLayout(ticketsPanel, BoxLayout.PAGE_AXIS));
-	System.out.println("inf");
-
 
 }
+//set text of tickets player hava in ticketsField
 public void addTickets(String player, String inf){
 	JTextArea ticketsField = new textArea();
 	ticketsField.repaint();
@@ -525,8 +491,8 @@ public void addTickets(String player, String inf){
 
 	ticketsField.setEditable(false);
 	ticketsField.setMaximumSize(new Dimension(Integer.MAX_VALUE, ticketsField.getPreferredSize().height+10) );
-	//playerPanel.add(ticketsPanel);
 }
+//add button for each palyer to show the tickets they hava
 public JButton addPlayerButton(String colour, int i){
 	JButton playerButton = new JButton(colour);
 	playerButton.setActionCommand(String.valueOf(i));
@@ -539,6 +505,7 @@ public JButton addPlayerButton(String colour, int i){
 	
 	return playerButton;
 }
+//reset MrXField
 public void resetMrX(){
 	movePanel.remove(MrXField);
 	MrXField = new textArea();
@@ -548,6 +515,7 @@ public void resetMrX(){
 	movePanel.add(MrXField);
 
 }
+//set text for tickets MrX used in MrXField
 public void setMrX(String MrXTickets){
 	MrXField.append(MrXTickets);
 	MrXField.setEditable(false);
@@ -555,33 +523,5 @@ public void setMrX(String MrXTickets){
 
 
 }
-/*public void setPlayer(String location){
-	playerField.setText(location);
-	playerField.setEditable(false);
-	playerField.setMaximumSize(new Dimension(Integer.MAX_VALUE, playerField.getPreferredSize().height+10) );
 
-}*/
-public void setMoveArea(String validMove){
-	moveArea.setText(validMove);
-	moveArea.setEditable(false);
-	moveArea.setMaximumSize(new Dimension(Integer.MAX_VALUE, moveArea.getPreferredSize().height+10) );
-}
-public int getMove(){
-	return Integer.parseInt(moveField.getText());
-} 
-/*public void displayErrorMessage(String errorMessage) {
-	JOptionPane.showMessageDialog(this, errorMessage);
-
-}*/
-
-class textArea extends JTextArea{
-	@Override
-	protected void paintComponent(Graphics g){
-		if(!isOpaque()){
-			g.setColor(getBackground());
-			g.fillRect(0, 0, getWidth(), getHeight());
-		}
-		super.paintComponent(g);
-	}
-}
 }
