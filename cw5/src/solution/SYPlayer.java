@@ -14,6 +14,10 @@ public class SYPlayer implements Player {
     protected Move choicemove;
     private boolean isMrX;
 
+    public SYPlayer() {
+
+    }
+
     public SYPlayer(Player player, int location, Map<Ticket, Integer> tickets) {
 	this.player = player;
 	this.location = location;
