@@ -4,6 +4,8 @@ import scotlandyard.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.IOException;
+
+//initialize ScotlandYardModel
 public class setNumberController {
 	private setNumberPlayer setNumber;
 	private ScotlandYardModel model;
@@ -13,7 +15,9 @@ public class setNumberController {
 		this.setNumber.addNumberListener(new numberListener());
 		this.setNumber.addLoadListener(new loadListener());
 	}
-
+//action listener for numberButton
+//get number of player from combobox
+//initialize ScotlandYardModel
 class numberListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
 		setNumber.setVisible(false);
@@ -31,6 +35,9 @@ class numberListener implements ActionListener {
 	}
 
 }
+//action listener for loadButton
+//get string for file name from loadField 
+//load the game
 class loadListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
 		//what if invalid
