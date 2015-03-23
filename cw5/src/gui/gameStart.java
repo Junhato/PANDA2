@@ -8,18 +8,18 @@ import javax.imageio.*;
 import java.io.*;
 import java.lang.*;
 import java.awt.image.BufferedImage;
+//make second frame to choose palyer
+
 public class gameStart extends JFrame{
 	private JButton startButton;
 	private JButton addButton;
 	private JTextArea colourField;
 	private JTextArea locationField;
 	private String[] colours = {"Black", "Blue", "Green", "Red", "White", "Yellow"};
-	//private List<Integer> locations = Arrays.asList(13,26,29,34,50,53,91,94,103,112,117,132,138,141,155,174,197,198);
 	private JPanel comboPanel;
 	private JPanel fieldPanel;
 	private JPanel playerPanel;
 	private JComboBox<String> colourCombo;
-	//private JComboBox<Integer> locationCombo;
 	private JButton mapButton;
 	private JButton secretButton;
 
@@ -76,60 +76,45 @@ public class gameStart extends JFrame{
 
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 		this.setSize(1200, 900);
-		//this.setLayout(new BorderLayout());
+ 		this.setSize(500, 400);
 		this.add(fieldPanel);
 	}
+//add combobox for coosing colour
 	public void addCombobox(){
-	//comboPanel.removeAll();
 
-    colourCombo = new JComboBox<String>(colours);
-    colourCombo.setPreferredSize(new Dimension(80, 30));
+		colourCombo = new JComboBox<String>(colours);
+		colourCombo.setPreferredSize(new Dimension(80, 30));
 
-    /*locationCombo = new JComboBox<Integer>(locations);
-    locationCombo.setPreferredSize(new Dimension(80, 30));*/
-
-
-    //JPanel comboPanel = new JPanel();
-    comboPanel.add(new JLabel("Player:"));
-	comboPanel.add(colourCombo);
-    //comboPanel.add(new JLabel("  Location:"));
-    //comboPanel.add(locationCombo);
-
-    /*label = new JLabel();
-    JPanel labelPanel = new JPanel();
-    labelPanel.add(label);
-
-    getContentPane().add(p, BorderLayout.CENTER);
-    getContentPane().add(labelPanel, BorderLayout.PAGE_END);*/
-  }
+	    
+		comboPanel.add(new JLabel("Player:"));
+		comboPanel.add(colourCombo);
+	}
+//add action listener to secretButton
 	public void addSecretListener (ActionListener listenSecretButton){
 		secretButton.addActionListener(listenSecretButton);
 	}
-
+//add addButton
 	public void addListener(ActionListener listenAddButton) {
 
 		addButton.addActionListener(listenAddButton);
 	} 
-	
+//add startButton to panel	
 	public void addStart(){
 		fieldPanel.add(startButton);
 	}
-	
+//add action listener to startButton	
 	public void addStartListener(ActionListener listenStartButton){
 		startButton.addActionListener(listenStartButton);
 	}
-
+//add action listener to mapButton
 	public void addMapListener(ActionListener listenMapButton){
 		mapButton.addActionListener(listenMapButton);
 	}
-
+//return string of selected colour in combobox
 	public String getColour(){
 		return (String)colourCombo.getSelectedItem();
 	} 
-	/*public int getStartLocation(){
-		return(int)locationCombo.getSelectedItem();
-	}*/
+//add text to colourField and locationField
 	public void addText(String colour, String location){
 		colourField.append("\n" + colour);
 		colourField.setMaximumSize(new Dimension(Integer.MAX_VALUE, colourField.getPreferredSize().height) );
@@ -138,14 +123,14 @@ public class gameStart extends JFrame{
 		locationField.setMaximumSize(new Dimension(Integer.MAX_VALUE, locationField.getPreferredSize().height) );
 		playerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, playerPanel.getPreferredSize().height) );
 
-		//colours.remove(colour);
-		//locations.remove(location);
 	}
+//make this frame invisible
 	public void disapper(){
 		this.setVisible(false);
 	}
+//remove button to add player
 	public void removeAddButton(){
 		fieldPanel.remove(addButton);
 	}
 		
-
+}
