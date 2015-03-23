@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 
 public class setNumberPlayer extends JFrame{
 	private JComboBox<Integer> numberField;
-	private Integer[] numbers = {2, 3, 4, 5};
+	private Integer[] numbers = {2, 3, 4, 5, 6};
 	private JButton numberButton;
 	private JButton loadButton;
 
