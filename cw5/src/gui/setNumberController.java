@@ -1,45 +1,99 @@
 package solution;
 
-import scotlandyard.*;
-import java.awt.event.*;
-import java.util.*;
-import java.io.IOException;
-public class setNumberController {
-	private setNumberPlayer setNumber;
-	private ScotlandYardModel model;
-	public setNumberController(setNumberPlayer setNumber) {
-		this.setNumber = setNumber;
-		this.setNumber.addNumberListener(new numberListener());
-		this.setNumber.addLoadListener(new loadListener());
-	}
+import java.awt.*;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.imageio.*;
+import java.io.*;
+import java.lang.*;
+import java.awt.image.BufferedImage;
+import javax.swing.JTextField;
 
-class numberListener implements ActionListener {
-	public void actionPerformed(ActionEvent actionEvent) { 
-		setNumber.setVisible(false);
-		List<Boolean> rounds = Arrays.asList(false, false, true, false, false, false, false, true, false, false, false, false, true, false, false, false, false, true, false, false, false);
-		try{
-			model = new ScotlandYardModel(setNumber.getNumber() - 1, rounds, "../resources/graph.txt");
-		}
-		catch(IOException e){
-			System.err.println(e);
-		}
-		gameStart start = new gameStart();
-		gameStartController scontroller = new gameStartController(model, start);
-		start.setVisible(true);
+public class setNumberPlayer extends JFrame{
+	private JComboBox<Integer> numberField;
+	private Integer[] numbers = {2, 3, 4, 5, 6};
+	private JButton numberButton;
+	private JButton loadButton;
+	private JTextField loadField;
 
-	}
-
-}
-class loadListener implements ActionListener {
-	public void actionPerformed(ActionEvent actionEvent) { 
-		//make model 
-		//model = ...
-		setNumber.setVisible(false);
+	public setNumberPlayer(){
+		Box box = Box.createVerticalBox();
+		Box boxh1 = Box.createHorizontalBox();
+		Box boxh2 = Box.createHorizontalBox();
+		Box boxv = Box.createVerticalBox();
 		
-		gameView view = new gameView();
-		gameController controller = new gameController(model, view);
-		view.setVisible(true);
-}
-}
+		numberField = new JComboBox<Integer>(numbers);
+		//numberField.setMaximumSize(new Dimension(100, 20) );
+		
+		numberButton = new JButton("New Game");
+		
+		JPanel numberPanel = new JPanel();
+		//numberPanel.setLayout(new FlowLayout());
+		/*numberPanel.setMinimumSize(new Dimension(500, 200));
+		numberPanel.add(new JLabel("How many are playing?"));
+		numberPanel.add(numberField);
+		numberPanel.add(numberButton);*/
+		JPanel comboPanel = new JPanel();
+		comboPanel.setMaximumSize(new Dimension(100, 30));
 
+		JPanel loadPanel = new JPanel();
+		loadPanel.setMaximumSize(new Dimension(300, 50));
+
+		loadButton = new JButton("Load privious game");
+		loadField = new JTextField("");
+		loadField.setMaximumSize(new Dimension(100, 30));
+		
+		//loadPanel.add(loadField);
+		this.setBackground(Color.WHITE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 		//this.setSize(1200, 900);
+		this.setSize(300, 200);
+
+		numberPanel.setLayout(new BoxLayout(numberPanel, BoxLayout.PAGE_AXIS));
+
+		//this.add(new JLabel("How many are playing?"));
+		
+		numberPanel.setMinimumSize(new Dimension(300, 200));
+		numberField.setMaximumSize(new Dimension(100, 50));
+
+		numberPanel.add(new JLabel("How many are playing?"));
+		boxh1.add(numberPanel);
+		boxh1.add(numberField);
+		//boxvl.add(numberButton);
+		
+		boxh2.add(loadButton);
+		boxh2.add(loadField);
+
+		box.add(boxh1);
+		box.add(boxh2);
+		boxv.add(box);
+		boxv.add(numberButton);
+
+		/*comboPanel.add(numberField);
+		numberPanel.add(comboPanel);
+		numberPanel.add(numberButton);
+
+		numberPanel.add(loadButton);
+		numberPanel.add(loadPanel);*/
+		
+		this.add(boxv);
+		//this.add(numberButton);
+		
+	}
+
+	public int getNumber(){
+		return (int) numberField.getSelectedItem();
+	}
+
+	public String getSaveNumber(){
+		return loadField.getText();
+	}
+
+	public void addNumberListener(ActionListener listenNumberButton) {
+
+		numberButton.addActionListener(listenNumberButton);
+	} 
+	public void addLoadListener(ActionListener listenLoadButton){
+		loadButton.addActionListener(listenLoadButton);
+	}
 }
