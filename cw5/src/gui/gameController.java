@@ -25,9 +25,11 @@ public class gameController {
 	private JFrame frame;
 	private JCheckBox check;
 	private ArrayList<String> MrXmoves = new ArrayList<String>();
+	private GameData currentGD;
 	public gameController(ScotlandYardModel model, gameView view) {
 		this.model = model;
 		this.view = view;
+		currentGD =  GameData.getInstance(model);
 		//this.view.addMoveListener(new moveListener());
 		this.players = model.getPlayers();
 		for(Colour player:players){
@@ -107,7 +109,7 @@ public class gameController {
 			
 		}
 		this.view.addFinishListener(new finishListener());
-		this.view.addSaveListener(new saveListener()
+		this.view.addSaveListener(new saveListener());
 		//view.setMoveArea(moveString);
 		//button.addActionListener(new moveListener());
 
@@ -115,13 +117,15 @@ public class gameController {
 
 	}	
 class replayListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			
+	public void actionPerformed(ActionEvent e){
+		currentGD.replaylastmove();
+		//"refresh" game visuals??
 	}
 }
 
 class saveListener implements ActionListener{
-		public void actionPerformed(ActionEvent e){
+	public void actionPerformed(ActionEvent e){
+		currentGD.saveGame();
 	}
 }
 
@@ -155,6 +159,7 @@ class okListener implements ActionListener {
 		frame.setVisible(false);
 		//index = view.getMove(); 
 		Move chosenMove = moves.get(index);
+		currentGD.saveGame("" + model.gameMembers.get(model.getCurrentPlayer()).getLocation(true) + " " + chosenMove.toString());
 		if(model.getCurrentPlayer().equals(Colour.Black)){
 			if(model.getRounds().get(model.getRound()) == true){
 				if (chosenMove instanceof MoveTicket) {

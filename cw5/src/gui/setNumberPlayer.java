@@ -7,12 +7,14 @@ import javax.imageio.*;
 import java.io.*;
 import java.lang.*;
 import java.awt.image.BufferedImage;
+import javax.swing.JTextField;
 
 public class setNumberPlayer extends JFrame{
 	private JComboBox<Integer> numberField;
 	private Integer[] numbers = {2, 3, 4, 5};
 	private JButton numberButton;
 	private JButton loadButton;
+	private JTextField loadField;
 
 	public setNumberPlayer(){
 		numberField = new JComboBox<Integer>(numbers);
@@ -28,8 +30,9 @@ public class setNumberPlayer extends JFrame{
 		numberPanel.add(numberButton);*/
 		JPanel comboPanel = new JPanel();
 		comboPanel.setMaximumSize(new Dimension(300, 50));
-
+		
 		loadButton = new JButton("Load privious game");
+		loadField = new JTextField("");
 
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,6 +52,8 @@ public class setNumberPlayer extends JFrame{
 		numberPanel.add(numberButton);
 
 		numberPanel.add(loadButton);
+		numberPanel.add(loadField);
+
 		this.add(numberPanel);
 		//this.add(numberButton);
 		

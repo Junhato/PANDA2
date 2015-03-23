@@ -32,14 +32,19 @@ class numberListener implements ActionListener {
 }
 class loadListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
-		//make model 
-		//model = ...
+		String textFieldValue = loadField.getText();
+		//what if invalid
+		int save = Integer.parseInt(textFieldValue);
+		if (save < 0) System.out.println("invalid savefile number");
+		else {
+		ScotlandYardModel model = GameData.loadGame(save);
 		setNumber.setVisible(false);
 		
 		gameView view = new gameView();
 		gameController controller = new gameController(model, view);
 		view.setVisible(true);
-}
+		}
+	}
 }
 
 }
