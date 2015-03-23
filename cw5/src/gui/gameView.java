@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.Graphics;
 import java.awt.image.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -27,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.BoxLayout;
 import javax.swing.JTextArea;
+import java.awt.event.*;
 
 import java.lang.reflect.Field;
 import java.lang.*;
@@ -55,24 +57,29 @@ public class gameView extends JFrame {
 	private JButton replayButton;
 	private JButton saveButton;
 	private JButton finishButton;
+	private JButton newButton;
 	private JPanel movePanel;
- 	public gameView() {
-		Font font1 = new Font("Verdana", Font.BOLD, 30);
-		Font font2 = new Font("Verdana", Font.PLAIN, 15);
+	private Font font2;
+	private JFrame statusFrame;
+	//private Font font1;
+ 	public gameView(){
+		font2 = new Font("Verdana", Font.BOLD, 15);
 		Font font3 = new Font("Verdana", Font.BOLD, 20);
+		Font font4 = new Font("Verdana", Font.BOLD, 30);
 
-
-		statusField = new JTextArea();
+		statusField  = new textArea();
 		statusField.setMaximumSize(new Dimension(Integer.MAX_VALUE, statusField.getPreferredSize().height) );
-		statusField.setFont(font1);
+		statusField.setFont(font3);
 
-		turnField  = new JTextArea();
+		
+		
+		turnField  = new textArea();
 		turnField.setMaximumSize(new Dimension(Integer.MAX_VALUE, turnField.getPreferredSize().height) );
 		turnField.setFont(font3);
 
-		roundField  = new JTextArea();
+		roundField  = new textArea();
 		roundField.setMaximumSize(new Dimension(Integer.MAX_VALUE, roundField.getPreferredSize().height) );
-		roundField.setFont(font1);
+		roundField.setFont(font4);
 
 		/*ticketsField  = new JTextArea();
 		ticketsField.setMaximumSize(new Dimension(Integer.MAX_VALUE, ticketsField.getPreferredSize().height) );
@@ -147,8 +154,8 @@ public class gameView extends JFrame {
 
 		//displayPanel.setLayout(BoxLayout.Y_AXIS);
 		imageLabel.add(statusField);
-		roundField.setBackground(new Color(250, 250, 250, 200));
-		turnField.setBackground(new Color(250, 250, 250, 200));
+		roundField.setBackground(new Color(0, 250, 200, 200));
+		turnField.setBackground(new Color(0, 250, 200, 200));
 		playerField.setBackground(new Color(250, 250, 250, 200));
 		MrXField.setBackground(new Color(250, 250, 250, 200));
 
@@ -167,6 +174,9 @@ public class gameView extends JFrame {
 
 		finishButton = new JButton("New Game");
 		finishButton.setBackground(Color.WHITE);
+
+		newButton = new JButton("New Game");
+		newButton.setBackground(Color.WHITE);
 
 		topPanel.add(replayButton);
 		topPanel.add(saveButton);
@@ -192,6 +202,10 @@ public class gameView extends JFrame {
 
 		
 	}
+public void addNewListener(ActionListener listenNewButton) {
+	newButton.addActionListener(listenNewButton);
+}
+
 public void addReplayListener(ActionListener listenReplayButton) {
 	replayButton.addActionListener(listenReplayButton);
 }
@@ -418,13 +432,35 @@ public JButton drawPass(int location, int index){
 	return button;
 }
 
-public void setStatus(boolean status){
-	if(status == false) statusField.setText("");
-	else statusField.setText("The Grame is over");
-	statusField.setEditable(false);
-	statusField.setMaximumSize(new Dimension(Integer.MAX_VALUE, statusField.getPreferredSize().height) );
+public JFrame setStatus(String s){
+	statusFrame = new JFrame();
+	statusFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+ 	statusFrame.setSize(600, 200);
+	JTextArea status = new JTextArea();
+	status.setFont(new Font("Verdana", Font.BOLD, 50));
+
+	status.setText(s);
+	status.setEditable(false);
+	status.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60) );
+	JPanel panel = new JPanel();
+	panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height) );
 	
+	panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+	
+	addFinishListener(new newListener());
+	panel.add(status);
+	panel.add(finishButton);
+	statusFrame.add(panel);
+	statusFrame.setVisible(true);
+	return statusFrame;
+		
 }
+class newListener implements ActionListener {
+	public void actionPerformed(ActionEvent actionEvent) {
+		statusFrame.setVisible(false);
+	}
+}
+
 public void setTurn(String player){
 	turnField.setText(player + "'s turn");
 	turnField.setEditable(false);
@@ -457,6 +493,8 @@ public void setRound(int round){
 }
 public void setTickets(){
 	ticketsPanel.removeAll();
+	ticketsPanel.setBackground(new Color(250, 250, 250, 100));
+
 	//ticketsPanel = new JPanel();
 	//ticketsPanel.setLayout(new BoxLayout(ticketsPanel, BoxLayout.PAGE_AXIS));
 	System.out.println("inf");
@@ -464,8 +502,11 @@ public void setTickets(){
 
 }
 public void addTickets(String player, String inf){
-	JTextArea ticketsField = new JTextArea();
-	ticketsField.setBackground(new Color(250, 250, 250, 200));
+	JTextArea ticketsField = new textArea();
+	ticketsField.repaint();
+
+	ticketsField.setBackground(new Color(0, 200, 250, 200));
+	ticketsField.setFont(font2);
 
 	ticketsField.setText(inf);
 	try{
@@ -488,7 +529,6 @@ public void addTickets(String player, String inf){
 	ticketsField.setEditable(false);
 	ticketsField.setMaximumSize(new Dimension(Integer.MAX_VALUE, ticketsField.getPreferredSize().height+10) );
 	//playerPanel.add(ticketsPanel);
-
 }
 public JButton addPlayerButton(String colour, int i){
 	JButton playerButton = new JButton(colour);
@@ -504,7 +544,9 @@ public JButton addPlayerButton(String colour, int i){
 }
 public void resetMrX(){
 	movePanel.remove(MrXField);
-	JTextArea MrXField = new JTextArea();
+	MrXField = new textArea();
+	MrXField.setBackground(new Color(250, 250, 250, 200));
+
 	MrXField.setText("MrX move\n");
 	movePanel.add(MrXField);
 
@@ -535,5 +577,14 @@ public int getMove(){
 
 }*/
 
-
+class textArea extends JTextArea{
+	@Override
+	protected void paintComponent(Graphics g){
+		if(!isOpaque()){
+			g.setColor(getBackground());
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+		super.paintComponent(g);
+	}
+}
 }
