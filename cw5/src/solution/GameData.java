@@ -1,6 +1,3 @@
-//the location before move is the first element
-//if I click pass nothing happens...
-
 package solution;
 
 import scotlandyard.*;
@@ -11,6 +8,7 @@ import java.util.*;
 
 public class GameData {
 
+//Wrapper class for a move with its source
      static class MovewLocation {
 	Move move;
 	int location;
@@ -51,7 +49,7 @@ public class GameData {
 	String initial = initialization(game);
 	SaveData.add(initial);
     }
-
+//Save the basic data of a game
     String initialization(ScotlandYardModel game) {
 	    if (game == null) return "";
 
@@ -93,10 +91,11 @@ public class GameData {
 	return new MovewLocation(ticket, location);
     }
 
+//save every move
     public void saveGame(String s) {
 	SaveData.add(s);
     }
-
+//when user want to save a game
     public void saveGame() {
 	//saves.put(name, save);
 	String filename = "save" + save + ".txt";
@@ -112,9 +111,7 @@ public class GameData {
     }
     //void saveCatalogue() {}
 
-//assume tickets are all fixed??
-    public static ScotlandYardModel loadGame(int save) {
-// read save catalogue first	    
+    public static ScotlandYardModel loadGame(int save) {	    
 // read file, start the game and play all moves
 	ScotlandYardModel game = null;
 	try {
@@ -133,7 +130,7 @@ public class GameData {
 		for (i = 0; i < Integer.parseInt(initialparts[2]); i++) {
 			rounds.add(Boolean.valueOf(initialparts[3 + i]));
 		}
-		i = i + 3; //24	
+		i = i + 3;	
 		try { game = new ScotlandYardModel(Integer.parseInt(initialparts[0]), rounds, initialparts[1]);
 		} catch (IOException e) {System.err.println("problem loading the game");}
 		int k = Integer.parseInt(initialparts[i]);
@@ -153,12 +150,10 @@ public class GameData {
 			}
 			game.join(player, Colour.valueOf(initialparts[i + j]), Integer.parseInt(initialparts[i+k+j]), Tickets);
 		}
-	//check isready
+	//check if game is ready after initialization
 	if (!game.isReady()) System.out.println("problem loading the game");
 	else {
 		for (int j = 1; j < SaveData.size(); j++) {
-
-			//should be able to play these moves visually??
 
 			MovewLocation amove = toMove(SaveData.get(j));
 			if (amove.getM() instanceof MoveDouble) {
@@ -180,6 +175,8 @@ public class GameData {
 	}
 	return game;
     }
+
+//these two method are meant to enable a player to replay a move
 
    public void replaylastmove() {
 	if (SaveData.size() == 0) {
