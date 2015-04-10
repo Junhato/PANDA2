@@ -24,7 +24,6 @@ public class RandomPlayer implements Player{
 	protected String graphFilename;
 	protected Map<Integer, List<Integer>> coordinateMap = new HashMap<Integer, List<Integer>>();
 	protected Graph currentGraph;
-	
     public RandomPlayer(ScotlandYardView view, String graphFilename){
         //TODO: A better AI makes use of `view` and `graphFilename`.
         this.view = view;
@@ -38,7 +37,7 @@ public class RandomPlayer implements Player{
     @Override
     public Move notify(int location, Set<Move> moves) {
         //TODO: Some clever AI here ...
-		score(moves);
+		score(location, moves);
         int choice = new Random().nextInt(moves.size());
         for (Move move : moves) {
             if (choice == 0) {
@@ -50,13 +49,13 @@ public class RandomPlayer implements Player{
         return null;
     }
     //print current board score
-    public void score(Set<Move> moves){
-		Colour player = view.getCurrentPlayer();
+    public void score(int location, Set<Move> moves){
+		//Colour player = view.getCurrentPlayer();
 		List<Colour> players = view.getPlayers();
 		int score = 0;
-		score += distance(moves, player, players);
+		score += distance(moves, location, players);
 		score += freedom(moves);
-		score += overall(moves, player);
+		score += overall(moves, location);
         System.out.println(score);
 	}
 	//read pos.text
@@ -97,8 +96,7 @@ public class RandomPlayer implements Player{
 	}
 
     //distance to ditectives
-    public int distance(Set<Move> moves, Colour currentPlayer, List<Colour> players){
-		int currentLocation = view.getPlayerLocation(currentPlayer);
+    public int distance(Set<Move> moves, int currentLocation, List<Colour> players){
 		List<Integer> pos = coordinateMap.get(currentLocation);
 		int score = 0;
 			for(Colour player:players){
@@ -118,8 +116,7 @@ public class RandomPlayer implements Player{
 		return moves.size();
 	}
 	//overall position on the board
-	public int overall(Set<Move> moves, Colour player){
-			int location = view.getPlayerLocation(player);
+	public int overall(Set<Move> moves, int location){
 			List<Integer> pos = coordinateMap.get(location);
 			int score = 0;
 			if(pos != null){
