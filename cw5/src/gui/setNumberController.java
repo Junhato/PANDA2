@@ -7,6 +7,7 @@ import java.io.IOException;
 public class setNumberController {
 	private setNumberPlayer setNumber;
 	private ScotlandYardModel model;
+	private GameData currentGD;
 	public setNumberController(setNumberPlayer setNumber) {
 		this.setNumber = setNumber;
 		this.setNumber.addNumberListener(new numberListener());
@@ -32,16 +33,25 @@ class numberListener implements ActionListener {
 }
 class loadListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) { 
+<<<<<<< HEAD
 		String textFieldValue = loadField.getText();
 		//what if invalid
 		int save = Integer.parseInt(textFieldValue);
 		if (save < 0) System.out.println("invalid savefile number");
 		else {
 		ScotlandYardModel model = GameData.loadGame(save);
+=======
+		//what if invalid
+		int save = Integer.parseInt(setNumber.getSaveNumber());
+		if (save < 0) System.out.println("invalid savefile number");
+		else {
+		ScotlandYardModel model = GameData.loadGame(save);
+		currentGD = new GameData(model);
+>>>>>>> b2a3f6f04e53b3f850d048aa3a53ab234d3cce35
 		setNumber.setVisible(false);
 		
 		gameView view = new gameView();
-		gameController controller = new gameController(model, view);
+		gameController controller = new gameController(model, view, currentGD);
 		view.setVisible(true);
 		}
 	}

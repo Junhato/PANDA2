@@ -18,7 +18,7 @@ public class gameStartController {
 	private List<Player> players;
 	private Map<Ticket, Integer> mrxTickets = new HashMap<Ticket, Integer>();
 	private Map<Ticket, Integer> detectiveTickets = new HashMap<Ticket, Integer>();
-
+	private GameData currentGD;
 	private List<Integer> locations = new LinkedList<Integer>(Arrays.asList(13,26,29,34,50,53,91,94,103,112,117,132,138,141,155,174,197,198));
 	private int startCard = 18;
 	private Random randomGenerator = new Random();
@@ -102,6 +102,7 @@ class AddListener implements ActionListener {
 		sview.addText(playercolour, playerlocation);
 		}
 		if(model.isReady() == true){
+		currentGD = new GameData(model);
 		sview.addStart();
 		sview.removeAddButton();
 		}
@@ -115,7 +116,7 @@ class startListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent){
 		sview.disapper();
 		gameView view = new gameView();
- 		gameController controller = new gameController(model, view);
+ 		gameController controller = new gameController(model, view, currentGD);
  		view.setVisible(true);
 	} 
 }

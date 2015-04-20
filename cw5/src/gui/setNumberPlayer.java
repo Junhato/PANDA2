@@ -17,6 +17,11 @@ public class setNumberPlayer extends JFrame{
 	private JTextField loadField;
 
 	public setNumberPlayer(){
+		Box box = Box.createVerticalBox();
+		Box boxh1 = Box.createHorizontalBox();
+		Box boxh2 = Box.createHorizontalBox();
+		Box boxv = Box.createVerticalBox();
+		
 		numberField = new JComboBox<Integer>(numbers);
 		//numberField.setMaximumSize(new Dimension(100, 20) );
 		
@@ -29,11 +34,23 @@ public class setNumberPlayer extends JFrame{
 		numberPanel.add(numberField);
 		numberPanel.add(numberButton);*/
 		JPanel comboPanel = new JPanel();
+<<<<<<< HEAD
 		comboPanel.setMaximumSize(new Dimension(300, 50));
 		
 		loadButton = new JButton("Load privious game");
 		loadField = new JTextField("");
+=======
+		comboPanel.setMaximumSize(new Dimension(100, 30));
 
+		JPanel loadPanel = new JPanel();
+		loadPanel.setMaximumSize(new Dimension(300, 50));
+>>>>>>> b2a3f6f04e53b3f850d048aa3a53ab234d3cce35
+
+		loadButton = new JButton("Load privious game");
+		loadField = new JTextField("");
+		loadField.setMaximumSize(new Dimension(100, 30));
+		
+		//loadPanel.add(loadField);
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  		//this.setSize(1200, 900);
@@ -47,21 +64,42 @@ public class setNumberPlayer extends JFrame{
 		numberField.setMaximumSize(new Dimension(100, 50));
 
 		numberPanel.add(new JLabel("How many are playing?"));
-		comboPanel.add(numberField);
+		boxh1.add(numberPanel);
+		boxh1.add(numberField);
+		//boxvl.add(numberButton);
+		
+		boxh2.add(loadButton);
+		boxh2.add(loadField);
+
+		box.add(boxh1);
+		box.add(boxh2);
+		boxv.add(box);
+		boxv.add(numberButton);
+
+		/*comboPanel.add(numberField);
 		numberPanel.add(comboPanel);
 		numberPanel.add(numberButton);
 
 		numberPanel.add(loadButton);
+<<<<<<< HEAD
 		numberPanel.add(loadField);
 
 		this.add(numberPanel);
+=======
+		numberPanel.add(loadPanel);*/
+		
+		this.add(boxv);
+>>>>>>> b2a3f6f04e53b3f850d048aa3a53ab234d3cce35
 		//this.add(numberButton);
 		
-
 	}
 
 	public int getNumber(){
 		return (int) numberField.getSelectedItem();
+	}
+
+	public String getSaveNumber(){
+		return loadField.getText();
 	}
 
 	public void addNumberListener(ActionListener listenNumberButton) {

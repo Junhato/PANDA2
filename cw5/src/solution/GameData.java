@@ -33,28 +33,23 @@ public class GameData {
     static ArrayList<String> SaveData;
     //Map<String, Integer> Saves;
 
-    private static GameData GDInstance = null;
-
-    private GameData(ScotlandYardModel game) {
+    public GameData(ScotlandYardModel game) {
         CurrentGame = game;
-	try {
-		File file = new File("save0.txt");
+
+	boolean newfile = false;
+	int i = 0;
+	while (!newfile) {
+		try {
+		File file = new File("save" + i + ".txt");
 		Scanner in = new Scanner(file);
-		String savecount = in.nextLine();
-		save = Integer.parseInt(savecount);
 		in.close();
-	} catch (Exception e) { save = 0; }
-//if there is no save file then save = 0;
+		} catch (Exception e) { newfile = true; }
+		i++;
+	}
+	save = i;
 	SaveData = new ArrayList<String>();
 	String initial = initialization(game);
 	SaveData.add(initial);
-    }
-
-    public static GameData getInstance(ScotlandYardModel game) {
-	if (GDInstance == null) {
-		GDInstance = new GameData(game);
-	}
-	return GDInstance;
     }
 
     String initialization(ScotlandYardModel game) {

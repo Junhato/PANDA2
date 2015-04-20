@@ -121,10 +121,10 @@ public class SpanningTree {
 	public void test2(Graph g1, Graph g2, Graph g3) {
 
 		double cs = test1(g3);
-		int idays = (int)cs;
-		double minutes = cs - idays;
-		minutes = (minutes * 1440);
-		SimpleDateFormat dateformat = new SimpleDateFormat("EEE d MMMMM yyyy hh:mm");
+		//int idays = (int)cs;
+		double minutes = cs * 24* 60; //cs - idays;
+		//minutes = (minutes * 1440);
+		SimpleDateFormat dateformat = new SimpleDateFormat("EEE d MMMMM yyyy hh:mm", Locale.UK);
 		String date = "Sun 15 February 2014 00:00";
 		Calendar calendar = Calendar.getInstance();
 		try {
@@ -133,7 +133,7 @@ public class SpanningTree {
 		catch (ParseException ex) {
 			System.err.println("error");
 		}
-		calendar.add(Calendar.DATE, idays);
+		//calendar.add(Calendar.DATE, idays);
 		calendar.add(Calendar.MINUTE, (int)(minutes));
 		date = dateformat.format(calendar.getTime());
 
