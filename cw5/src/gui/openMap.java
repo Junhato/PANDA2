@@ -8,7 +8,7 @@ import javax.imageio.*;
 import java.io.*;
 import java.lang.*;
 import java.awt.image.BufferedImage;
-
+//make frame to show map
 public class openMap extends JFrame{
 	private ImageIcon icon;
 	private BufferedImage img = null;
@@ -26,20 +26,18 @@ public class openMap extends JFrame{
 
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
- 		//this.setSize(1200, 900);
 		this.setMinimumSize(new Dimension(width, height));
 
-		//this.setLayout(new BorderLayout());
 		this.add(imagePanel);
 
 
 
 	}
+//load image of the map
 	public void setImage(){
 		try
 		{
 			img = ImageIO.read(new File("../resources/map.jpg"));
-			//g2d = img.createGraphics();
 
 		}
 		catch( IOException e )
@@ -48,5 +46,4 @@ public class openMap extends JFrame{
 		}
 	}
 }
-
 

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class ScotlandYardModel extends ScotlandYard {
-    //Spectators??
+
     protected int numberOfDetectives, currentPlayer, currentRound;
     protected List<Boolean> rounds;
     protected String graphFileName;
@@ -164,7 +164,7 @@ public class ScotlandYardModel extends ScotlandYard {
 			for (Edge edge : currentGraph.getEdges(destination)) {
 				
 				destination = (newPosition == (int)edge.source()) ? (int)edge.target() : (int)edge.source();
-			//can Mr.X go somewhere and come back as two moves?
+
 				if (currenttickets.get(Ticket.fromRoute((Route)edge.data())) != 0) {
 					if (e.data().equals(edge.data()) && nbofticket ==1) continue;
 					if (occupied(destination, player)) continue;
@@ -213,7 +213,7 @@ public class ScotlandYardModel extends ScotlandYard {
 			System.out.println("This colour already belong to a detective");
 			return false;
 		}
-	// testing for two person starting at the same location don't know if it is necessary
+	// testing for two person starting at the same location
 		if (gameMembers.get(c).getLocation(true) == location) {
 			System.out.println("There is already a detective at this location");
 			return false;
@@ -271,14 +271,19 @@ public class ScotlandYardModel extends ScotlandYard {
     @Override
     public boolean isGameOver() {
 	int counter = 0;
+//if game not ready
 	if(!isReady()) return false;
+//if MrX has no valid moves
 	if (getCurrentPlayer().equals(Colour.Black) && validMoves(Colour.Black).isEmpty()) return true;
+//if a detective caught MrX
 	if (!getCurrentPlayer().equals(Colour.Black)
 	&&  getPlayerLocation(getCurrentPlayer()) == gameMembers.get(Colour.Black).getLocation(true)) return true;
+//if the game is over and MrX was not caught
 	if (((currentRound + 1) == rounds.size()) && currentPlayer == 0) {
 		isWinnerMrX = true;
 		return true;
 	}
+//if detectives are all stuck
 	for (Colour c : orderofPlayer) {
 		if (!c.equals(Colour.Black)) {
 		Map<Ticket, Integer> currentTickets = gameMembers.get(c).getTickets();

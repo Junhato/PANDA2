@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+//control the game with gameView
 public class gameController {
 	private gameView view;
 	private ScotlandYardModel model;
@@ -26,12 +27,13 @@ public class gameController {
 	private JCheckBox check;
 	private ArrayList<String> MrXmoves = new ArrayList<String>();
 	private GameData currentGD;
+
 	public gameController(ScotlandYardModel model, gameView view, GameData currentGD) {
 		this.model = model;
 		this.view = view;
 		this.currentGD = currentGD;
-		//this.view.addMoveListener(new moveListener());
 		this.players = model.getPlayers();
+		//draw circle for position of each player
 		for(Colour player:players){
 		System.out.println(model.getPlayerLocation(player));
 			int location = (int) model.getPlayerLocation(player);
@@ -41,12 +43,10 @@ public class gameController {
 			view.setImage(player.toString(), location);
 		}
 
-		//view.setStatus(model.isGameOver());
 		view.setTurn(model.getCurrentPlayer().toString());
 		view.setRound(1);
 		this.members = model.getMembers();
-
-		//for(Colour p:players){
+		//write tickets players have in ticketsField
 			String tickets = "";
 			
 			SYPlayer c = members.get(model.getCurrentPlayer());
@@ -58,8 +58,7 @@ public class gameController {
 			tickets += "DoubleMove ticket:" + playerTickets.get(Ticket.DoubleMove)+ "\n";
 			tickets += "SecretMove ticket:" + playerTickets.get(Ticket.SecretMove)+ "\n";
 			view.addTickets(model.getCurrentPlayer().toString(), tickets);
-		
-		//}
+		//make button for each player
 		int numPlayer = 0;
 		for(Colour p:players){
 			JButton playerButton = view.addPlayerButton(p.toString(), numPlayer);
@@ -68,7 +67,7 @@ public class gameController {
 
 			numPlayer++;
 		}
-		
+		//make button for each valid moves and draw line for it
 		this.moves = model.validMoves(model.getCurrentPlayer());
 		String moveString = "";
 		int i = 0;
@@ -110,17 +109,15 @@ public class gameController {
 		}
 		this.view.addFinishListener(new finishListener());
 		this.view.addSaveListener(new saveListener());
-		//view.setMoveArea(moveString);
-		//button.addActionListener(new moveListener());
 	}	
 
-
+//action listener for saveButton
 class saveListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		currentGD.saveGame();
 	}
 }
-
+//action listener for new game button
 class finishListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 			view.setVisible(false);
@@ -129,6 +126,7 @@ class finishListener implements ActionListener{
 			newGame.setVisible(true);
 		}
 }
+//action listener for button for each player
 class playerListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 			view.repaint();
@@ -148,46 +146,17 @@ class playerListener implements ActionListener{
 					view.addTickets(players.get(in).toString(), tickets);
 				}
 }
+//action listener for making moves
 class okListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) {
 		frame.setVisible(false);
-		//index = view.getMove(); 
 		Move chosenMove = moves.get(index);
 		currentGD.saveGame("" + model.gameMembers.get(model.getCurrentPlayer()).getLocation(true) + " " + chosenMove.toString());
-		/*if(model.getCurrentPlayer().equals(Colour.Black)){
-			if(model.getRounds().get(model.getRound()) == true){
-				if (chosenMove instanceof MoveTicket) {
-					model.play((MoveTicket) chosenMove);
-					MrXmoves.add(String.valueOf(((MoveTicket) chosenMove).target));
-				}
-				if (chosenMove instanceof MoveDouble){
-					 model.play((MoveDouble) chosenMove);
-					List<Move> list = ((MoveDouble) chosenMove).moves;
-					MrXmoves.add(String.valueOf(((MoveTicket) list.get(0)).target));
-					MrXmoves.add((((MoveTicket) list.get(1)).ticket).toString());
-				}
-				//if (chosenMove instanceof MovePass) model.play((MovePass) chosenMove);
-			}
-			else{
-				if (chosenMove instanceof MoveTicket) {
-					model.play((MoveTicket) chosenMove);
-					MrXmoves.add(((MoveTicket) chosenMove).ticket.toString());
-				}
-				if (chosenMove instanceof MoveDouble){
-					 model.play((MoveDouble) chosenMove);
-					List<Move> list = ((MoveDouble) chosenMove).moves;
-					MrXmoves.add(((MoveTicket) list.get(0)).ticket.toString());
-					if(model.getRounds().get(model.getRound()-1) == true) MrXmoves.add(String.valueOf(((MoveTicket) list.get(1)).target));
-					else MrXmoves.add((((MoveTicket) list.get(1)).ticket).toString());
-				}
-			}
-		}
-		else{*/
+		//make move
 		if (chosenMove instanceof MoveTicket) model.play((MoveTicket) chosenMove);
 		if (chosenMove instanceof MoveDouble) model.play((MoveDouble) chosenMove);
 		if (chosenMove instanceof MovePass) model.play((MovePass) chosenMove);
-		//}
-
+		//check if the game is over
 		if(model.isGameOver()){
 
 			if(model.getWinningPlayers().contains(Colour.Black)) view.setStatus("MrX WIN !!");
@@ -197,7 +166,6 @@ class okListener implements ActionListener {
 		model.nextPlayer();
 		
 		
-		System.out.println(model.isGameOver());
 		if(model.isGameOver()){
 			if(model.getWinningPlayers().contains(Colour.Black)) view.setStatus("MrX WIN !!");
 			else view.setStatus("Detectives WIN !!");
@@ -207,6 +175,7 @@ class okListener implements ActionListener {
 		view.repaint();
 
 		view.resetImage();
+		//draw circle for position of each player
 		for(Colour player:players){
 			int location = (int) model.getPlayerLocation(player);
 			if(location == 0 && mrxLocation == 0) continue;
@@ -215,11 +184,10 @@ class okListener implements ActionListener {
 			view.setImage(player.toString(), location);
 
 		}
-		//view.setStatus(model.isGameOver());
 		view.setTurn(model.getCurrentPlayer().toString());
 		view.setRound(model.getRound());
 		view.setTickets();
-		//for(Colour p:players){
+		//write tickets for current player
 			String tickets = "";
 			
 			SYPlayer c = members.get(model.getCurrentPlayer());
@@ -232,8 +200,7 @@ class okListener implements ActionListener {
 			tickets += "SecretMove ticket:" + playerTickets.get(Ticket.SecretMove)+ "\n";
 			view.addTickets(model.getCurrentPlayer().toString(), tickets);
 		
-		//}
-		
+		//make button for each valid moves and draw line for it
 		moves = model.validMoves(model.getCurrentPlayer());
 		String moveString = "";
 		int i = 0;
@@ -249,13 +216,11 @@ class okListener implements ActionListener {
 				System.out.print(move.toString());
 				int a = ((MoveTicket) move).target;
 				ticket = ((MoveTicket) move).ticket;
-				//if(ticket.equals(Ticket.SecretMove) && t == target) continue;
 				target = a;
 			}
 			else if (move instanceof MoveDouble) {
 				List<Move> list = ((MoveDouble) move).moves;
 				int a = ((MoveTicket) list.get(1)).target;
-				//if(a == target) continue;
 				target = a;
 				ticket = Ticket.DoubleMove;
 			}
@@ -281,9 +246,9 @@ class okListener implements ActionListener {
 			button.addActionListener(new moveListener());
 
 		}
-		view.setMoveArea(moveString);
 		view.resetMrX();
 		int iMrX = 1;
+		//write tickets MrX used in MrXField
 		for (String s:model.MrXTrace){
 			
 			view.setMrX("Round" + iMrX + ": " + s + "\n");
@@ -293,6 +258,9 @@ class okListener implements ActionListener {
 		}
 	}
 }
+//action listener for when click the button on the map 
+//make new frame to show selected move
+//make ok button to make move
 class moveListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) {
 		JTextField field = new JTextField();
@@ -304,18 +272,8 @@ class moveListener implements ActionListener {
 		field.setMaximumSize(new Dimension(Integer.MAX_VALUE, field.getPreferredSize().height) );
 
 		frame = new JFrame();
-		//frame.setBackground(Color.WHITE);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
- 		//this.setSize(1200, 900);
 		frame.setMinimumSize(new Dimension(200, 100));
-		/*JPanel text = new JPanel();
-		text.setLayout(new BoxLayout(text, BoxLayout.PAGE_AXIS));
-		text.add(field);
-		/*if(model.getCurrentPlayer().equals(Colour.Black) && model.getPlayerTickets(Colour.Black, Ticket.SecretMove) > 0){
-			check = new JCheckBox("Use SecretMove?", false);
-			text.add(check);
-		}*/
-		//frame.setLayout(new BoxLayout(frame, BoxLayout.PAGE_AXIS));
 		frame.setLayout(new BorderLayout());
 		frame.add(field, BorderLayout.CENTER);	
 		JButton okButton = new JButton("ok");
@@ -326,6 +284,10 @@ class moveListener implements ActionListener {
 		frame.setVisible(true);
 	}
 }
+//action listener for when click the button for double move
+//make new frame
+//combobox to choose right double move
+//make ok button to make move
 class moveDoubleListener implements ActionListener {
 	public void actionPerformed(ActionEvent actionEvent) {
 		index = Integer.parseInt(actionEvent.getActionCommand());
@@ -336,6 +298,7 @@ class moveDoubleListener implements ActionListener {
 		int num = 0;
 		ArrayList<Integer> ms = new ArrayList<Integer>();
 		int n = 0;
+		//show possible moves with double moves
 		for(Move m:moves){
 			n ++;
 			if (m instanceof MoveTicket) continue;
@@ -355,6 +318,7 @@ class moveDoubleListener implements ActionListener {
 		}
 		Integer[] m = new Integer[ms.size()];
 		m = ms.toArray(m);
+		//make combobox
 		JComboBox<Integer> moveChoice = new JComboBox<Integer>(m);
         	moveChoice.addActionListener(new ActionListener(){
                     	public void actionPerformed(ActionEvent e){
@@ -370,12 +334,9 @@ class moveDoubleListener implements ActionListener {
 		JButton okButton = new JButton("ok");
 		okButton.addActionListener(new okListener());
 		frame = new JFrame();
-		//frame.setBackground(Color.WHITE);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
- 		//this.setSize(1200, 900);
 		frame.setMinimumSize(new Dimension(400, area.getPreferredSize().height + 100));
 
-		//frame.setLayout(new BoxLayout(frame, BoxLayout.PAGE_AXIS));
 		frame.setLayout(new BorderLayout());
 		frame.add(area, BorderLayout.NORTH);
 		frame.add(moveChoice, BorderLayout.CENTER);

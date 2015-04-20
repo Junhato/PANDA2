@@ -9,6 +9,7 @@ import java.lang.*;
 import java.awt.image.BufferedImage;
 import javax.swing.JTextField;
 
+//make first frame to choose number of players
 public class setNumberPlayer extends JFrame{
 	private JComboBox<Integer> numberField;
 	private Integer[] numbers = {2, 3, 4, 5, 6};
@@ -23,42 +24,27 @@ public class setNumberPlayer extends JFrame{
 		Box boxv = Box.createVerticalBox();
 		
 		numberField = new JComboBox<Integer>(numbers);
-		//numberField.setMaximumSize(new Dimension(100, 20) );
 		
 		numberButton = new JButton("New Game");
 		
 		JPanel numberPanel = new JPanel();
-		//numberPanel.setLayout(new FlowLayout());
-		/*numberPanel.setMinimumSize(new Dimension(500, 200));
-		numberPanel.add(new JLabel("How many are playing?"));
-		numberPanel.add(numberField);
-		numberPanel.add(numberButton);*/
 		JPanel comboPanel = new JPanel();
-<<<<<<< HEAD
-		comboPanel.setMaximumSize(new Dimension(300, 50));
-		
-		loadButton = new JButton("Load privious game");
-		loadField = new JTextField("");
-=======
+
 		comboPanel.setMaximumSize(new Dimension(100, 30));
 
 		JPanel loadPanel = new JPanel();
 		loadPanel.setMaximumSize(new Dimension(300, 50));
->>>>>>> b2a3f6f04e53b3f850d048aa3a53ab234d3cce35
 
 		loadButton = new JButton("Load privious game");
 		loadField = new JTextField("");
 		loadField.setMaximumSize(new Dimension(100, 30));
 		
-		//loadPanel.add(loadField);
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 		//this.setSize(1200, 900);
 		this.setSize(300, 200);
 
 		numberPanel.setLayout(new BoxLayout(numberPanel, BoxLayout.PAGE_AXIS));
 
-		//this.add(new JLabel("How many are playing?"));
 		
 		numberPanel.setMinimumSize(new Dimension(300, 200));
 		numberField.setMaximumSize(new Dimension(100, 50));
@@ -66,7 +52,6 @@ public class setNumberPlayer extends JFrame{
 		numberPanel.add(new JLabel("How many are playing?"));
 		boxh1.add(numberPanel);
 		boxh1.add(numberField);
-		//boxvl.add(numberButton);
 		
 		boxh2.add(loadButton);
 		boxh2.add(loadField);
@@ -81,31 +66,30 @@ public class setNumberPlayer extends JFrame{
 		numberPanel.add(numberButton);
 
 		numberPanel.add(loadButton);
-<<<<<<< HEAD
 		numberPanel.add(loadField);
 
 		this.add(numberPanel);
-=======
+
 		numberPanel.add(loadPanel);*/
 		
 		this.add(boxv);
->>>>>>> b2a3f6f04e53b3f850d048aa3a53ab234d3cce35
 		//this.add(numberButton);
 		
 	}
-
+//return number selected for number of player
 	public int getNumber(){
 		return (int) numberField.getSelectedItem();
 	}
-
+//return string for file name
 	public String getSaveNumber(){
 		return loadField.getText();
 	}
-
+//add action listener to numberButton
 	public void addNumberListener(ActionListener listenNumberButton) {
 
 		numberButton.addActionListener(listenNumberButton);
 	} 
+//add action listener to loadButton
 	public void addLoadListener(ActionListener listenLoadButton){
 		loadButton.addActionListener(listenLoadButton);
 	}
