@@ -14,6 +14,8 @@ import java.util.Set;
 
 /**
  * An AI that plays Mr.X
+ * This AI mimic almost random move when detectives are far away.
+ * It calculates its moves better when detectives are near
  */
 
 public class MyAIPlayer implements Player{
@@ -21,7 +23,6 @@ public class MyAIPlayer implements Player{
 	protected ScotlandYardView view;
 	protected String graphFilename;
 	protected Map<Integer, List<Integer>> coordinateMap = new HashMap<Integer, List<Integer>>();
-	protected Colour myColour; //always black?
 	protected int nbofplayers;
 	protected List<Boolean> truerounds;
 
@@ -35,8 +36,8 @@ public class MyAIPlayer implements Player{
 
     @Override
     public Move notify(int location, Set<Move> moves){
+
 	this.nbofplayers = view.getPlayers().size();
-	myColour = view.getCurrentPlayer();
 	//what happens if there is no move available??
 	//is there (always) a pass move provided??
 	if (moves.size() == 0) return null;
@@ -53,21 +54,23 @@ public class MyAIPlayer implements Player{
 
 	//evaluate current situation (Min-Max)
 		long startTime = System.nanoTime();    
-		Move themove = Minimax(location, moves, (8-nbofplayers)*nbofplayers); //Minimax(location, moves, 2); 
+		Move themove = Minimax(location, moves, 1);
 		long elapsedTime = System.nanoTime() - startTime;
 		double seconds = (double)elapsedTime / 1000000000.0;
 		System.out.println(seconds);
+		System.out.println(themove.toString());
 		return themove;
 	//return Minimax(location, moves, (8-nbofplayers)*nbofplayers);
     }
 
     public Move findbestMove(Map<Move, Integer> currentscore) {
     	Move bestmove = null;
+	System.out.println(currentscore.isEmpty());
 	if (currentscore.isEmpty()) return bestmove;
 
-	int max = 0;
+	int max = Integer.MIN_VALUE;
 	for (Move move : currentscore.keySet()) {
-		if (currentscore.get(move) > max)  {
+		if (currentscore.get(move) >= max)  {
 			max = currentscore.get(move);
 			bestmove = move;
 		}
@@ -76,7 +79,7 @@ public class MyAIPlayer implements Player{
     }
 
     public Map<Move, Integer> onelookahead(ScotlandYardView view, int location, Set<Move> moves) {
-
+	Colour myColour = view.getCurrentPlayer();
 	Map<Move, Integer> boardscores = new HashMap<Move, Integer>();
 	for (Move move : moves) {
 
@@ -91,27 +94,34 @@ public class MyAIPlayer implements Player{
     }
 
     public Move Minimax(int location, Set<Move> moves, int depth) {
-	//choose if use special move or not here like evaluate move option??
+
 	Map<Move, Integer> boardscores = new HashMap<Move, Integer>();
 	for (Move move : moves) {
 		//recreate current game state
 		ScotlandYardModel game = createGame(this.view, location);
 		int choice = MaxMove(move, depth, game, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+		//reduce the usage of Secret and Double move
+		if (move instanceof MoveTicket) {
+			MoveTicket thismove = (MoveTicket)move;
+			if (thismove.ticket.equals(Ticket.Secret)) choice = choice - 100;
+		}
+		else if (move instanceof MoveDouble) choice = choice - 100;
 		boardscores.put(move, choice);
     	}
 	return findbestMove(boardscores);
     }
 
     public int MaxMove(Move move, int depth, ScotlandYardModel currentGame, int alpha, int beta) {
+
 	int currentDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
 	//detectives only get closer to MrX (else it is not an interesting move)
 	if (move instanceof MoveDouble) currentGame.play((MoveDouble)move);
 	if (move instanceof MoveTicket) currentGame.play((MoveTicket)move);
 	if (currentGame.getCurrentPlayer() != Colour.Black) {
 		int newDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
-		if (Math.abs(currentDistance - newDistance) > 50) return Integer.MIN_VALUE;
+		if (Math.abs(currentDistance - newDistance) > 30) return (Integer.MIN_VALUE + 1000);
 	}
-	System.out.println(depth);
 	currentGame.nextPlayer();
 	Colour player = currentGame.getCurrentPlayer();
 
@@ -130,18 +140,16 @@ public class MyAIPlayer implements Player{
 		return currentscores.get(bestmove);		
 	}
 	else {	
-		int depthbest = Integer.MIN_VALUE;
+		int depthbest = 0;
 		for (Move m: currentGame.validMoves(player)) {
 
 			ScotlandYardModel thislayer = createGame(currentGame, currentGame.getPlayerLocation(player));
 			while (thislayer.getCurrentPlayer() != player) thislayer.nextPlayer();
 
-			if (m instanceof MovePass) continue;
-
 			int currentbest = MaxMove(m, depth-1, thislayer, alpha, beta);
 
 			if (player.equals(Colour.Black)) {
-				if (depthbest == Integer.MIN_VALUE) depthbest = currentbest;
+				if (depthbest == 0) depthbest = currentbest;
 				else if (currentbest > depthbest) {
 					depthbest = currentbest;
 					alpha = currentbest;
@@ -149,7 +157,7 @@ public class MyAIPlayer implements Player{
 			if (beta > alpha) return depthbest;
 			}
 			else {
-				if (depthbest == Integer.MIN_VALUE) depthbest = currentbest;
+				if (depthbest == 0) depthbest = currentbest;
 				else if (currentbest > depthbest) {
 					depthbest = currentbest;
 					beta = currentbest;
@@ -246,7 +254,7 @@ public class MyAIPlayer implements Player{
 
      //read all possible positions
      public void readPos(){
-		File file = new File("../resources/pos.txt");	
+		File file = new File("resources/pos.txt");	
 			Scanner in = null;
 			try 
 			{

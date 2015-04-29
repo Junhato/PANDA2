@@ -31,9 +31,9 @@ public class GuiGame {
                 true,
                 false, false, false, false, false,
                 true);
-        String graphFilename     = "../resources/graph.txt";
-        String positionsFilename = "../resources/pos.txt";
-        String imageFilename     = "../resources/map.jpg";
+        String graphFilename     = "resources/graph.txt";
+        String positionsFilename = "resources/pos.txt";
+        String imageFilename     = "resources/map.jpg";
 
         Map<Colour, MyPlayerFactory.PlayerType> typeMap = new HashMap<Colour, MyPlayerFactory.PlayerType>();
         typeMap.put(Colour.Black,  MyPlayerFactory.PlayerType.AI);
