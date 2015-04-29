@@ -115,7 +115,7 @@ public class MyAIPlayer implements Player{
 		if (move instanceof MoveTicket) {
 			MoveTicket thismove = (MoveTicket)move;
 			if (thismove.ticket.equals(Ticket.Secret)) {
-				choice -= 18;
+				//choice -= 8;
 				if(this.view.getRound() == 2 || this.view.getRound() == 6 || this.view.getRound() == 12 || this.view.getRound() == 17) {
 					choice -= 90;
 				}
