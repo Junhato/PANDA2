@@ -115,13 +115,13 @@ public class MyAIPlayer implements Player{
 		if (move instanceof MoveTicket) {
 			MoveTicket thismove = (MoveTicket)move;
 			if (thismove.ticket.equals(Ticket.Secret)) {
-				choice -= 10;
-				if(this.view.getRound() == 3 || this.view.getRound() == 8 || this.view.getRound() == 13 || this.view.getRound() == 18) {
-					choice -= 40;
+				choice -= 18;
+				if(this.view.getRound() == 2 || this.view.getRound() == 6 || this.view.getRound() == 12 || this.view.getRound() == 17) {
+					choice -= 90;
 				}
 			}
 		}
-		else if (move instanceof MoveDouble) choice = choice - 10;
+		else if (move instanceof MoveDouble) choice = choice - 12;
 		boardscores.put(move, choice);
     	}
 	//return findbestMove(boardscores);
