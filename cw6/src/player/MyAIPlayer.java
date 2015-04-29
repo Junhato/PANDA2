@@ -53,7 +53,7 @@ public class MyAIPlayer implements Player{
 		//Map<Move, Integer> currentscore = onelookahead(this.view, location, moves);
 		//return findbestMove(currentscore);
 
-	//evaluate current situation (Min-Max)
+	//evaluate current situation (Min-Max + alpha-beta + quiescence search)
 		long startTime = System.nanoTime();    
 		Move themove = Minimax(location, moves, (8-nbofplayers)*nbofplayers);
 		long elapsedTime = System.nanoTime() - startTime;
@@ -102,6 +102,11 @@ public class MyAIPlayer implements Player{
 
 	Map<Move, Integer> boardscores = new HashMap<Move, Integer>();
 	for (Move move : moves) {
+		//track time
+		elapsedTime = System.nanoTime() - startTime;
+		double seconds = (double)elapsedTime / 1000000000.0;
+		if (seconds > 13) break;
+
 		//recreate current game state
 		ScotlandYardModel game = createGame(this.view, location);
 		int choice = MaxMove(move, depth, game, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -109,22 +114,24 @@ public class MyAIPlayer implements Player{
 		//reduce the usage of Secret and Double move
 		if (move instanceof MoveTicket) {
 			MoveTicket thismove = (MoveTicket)move;
-			if (thismove.ticket.equals(Ticket.Secret)) choice = choice - 100;
+			if (thismove.ticket.equals(Ticket.Secret)) {
+				choice -= 10;
+				if(this.view.getRound() == 3 || this.view.getRound() == 8 || this.view.getRound() == 13 || this.view.getRound() == 18) {
+					choice -= 40;
+				}
+			}
 		}
-		else if (move instanceof MoveDouble) choice = choice - 100;
+		else if (move instanceof MoveDouble) choice = choice - 10;
 		boardscores.put(move, choice);
-
-	elapsedTime = System.nanoTime() - startTime;
-	double seconds = (double)elapsedTime / 1000000000.0;
-	if (seconds > 13) break;
     	}
+	//return findbestMove(boardscores);
 	return average(boardscores, location, moves);
     }
-
+    //is it more acurate to average onelook and minimax?
     public Move average(Map<Move, Integer> minimax, int location, Set<Move> moves) {
 	   Map<Move, Integer> one = onelookahead(this.view, location, moves);
-	   for (Move m : minimax.keySet()) {
-		one.put(m, minimax.get(m) + one.get(m));
+	   for (Move m : one.keySet()) {
+		if (minimax.containsKey(m)) one.put(m, minimax.get(m) + one.get(m));
 	   }
 	return findbestMove(one);
     }
@@ -132,10 +139,12 @@ public class MyAIPlayer implements Player{
     public int MaxMove(Move move, int depth, ScotlandYardModel currentGame, int alpha, int beta) {
 
 	int currentDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
+
 	if (move instanceof MoveDouble) currentGame.play((MoveDouble)move);
 	if (move instanceof MoveTicket) currentGame.play((MoveTicket)move);
+
 	//assume detectives only get closer to MrX (else it is not an interesting move)
-	if (currentGame.getCurrentPlayer() != Colour.Black) {
+	if (!currentGame.getCurrentPlayer().equals(Colour.Black)) {
 		int newDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
 		//if ((newDistance - currentDistance) > 75) return (Integer.MIN_VALUE + 500);
 		//if ((newDistance - currentDistance) > 30) return (Integer.MIN_VALUE + 1000);
@@ -143,21 +152,24 @@ public class MyAIPlayer implements Player{
 		if ((newDistance - currentDistance) > 30) {
 			Map<Move, Integer> quiescent = onelookahead(currentGame, currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), 
 								    currentGame.validMoves(currentGame.getCurrentPlayer()));
-		Move quiet = findbestMove(quiescent);
-		return quiescent.get(quiet);
-			
+			Move quiet = findbestMove(quiescent);
+			return quiescent.get(quiet);	
 		}
 	}
 	currentGame.nextPlayer();
 	Colour player = currentGame.getCurrentPlayer();
 
+	if (!player.equals(Colour.Black)) {
+		if (isgameover(currentGame.getPlayerLocation(Colour.Black), currentGame)) return Integer.MIN_VALUE;
+	}
+
 	if (player.equals(Colour.Black) && currentGame.validMoves(player).size() == 0) return Integer.MIN_VALUE;
-			//assume that there is always a pass move
+	//assume that there is always a pass move
 	//else if (currentGame.validMoves(player).size() == 1 || currentGame.validMoves(player).size() == 0)
 
 	if (currentGame.isGameOver()) {
 		if (player.equals(Colour.Black)) return Integer.MAX_VALUE;
-		else return Integer.MIN_VALUE;		
+		else if (currentGame.getWinningPlayers().size() > 1) return Integer.MIN_VALUE;	
 	}
 	if (depth == 0) {
 
@@ -193,6 +205,21 @@ public class MyAIPlayer implements Player{
 		}
 		return depthbest;
 	}
+    }
+
+    //public boolean isgameover(ScotlandYardModel currentGame, Set<Move> moves) {getWinningPlayers()} use up too much memory??
+
+    public boolean isgameover(int location, ScotlandYardModel game) {
+	for (Colour colour : game.getPlayers()) {
+
+		for (Move move : game.validMoves(colour)) {
+			if (move instanceof MoveTicket) {
+				MoveTicket thismove = (MoveTicket)move;
+				if (location == thismove.target) return true;
+			}
+    		}
+	}
+	return false;
     }
 
     //calculate board score for a new location
@@ -280,37 +307,29 @@ public class MyAIPlayer implements Player{
 
      //read all possible positions
      public void readPos(){
-		File file = new File("resources/pos.txt");	
-			Scanner in = null;
-			try 
-			{
-				in = new Scanner(file);
-			} 
-			catch (FileNotFoundException e) 
-			{
-				System.out.println(e);
-			}
-			
-			// get the number of nodes
-			String topLine = in.nextLine();
+	File file = new File("resources/pos.txt");	
+	Scanner in = null;
+	try { in = new Scanner(file); } 
+	catch (FileNotFoundException e) { System.out.println(e); }
 		
-			int numberOfNodes = Integer.parseInt(topLine);
-			
-			
-			for(int i = 0; i < numberOfNodes; i++)
-			{
-				String line = in.nextLine();
-		   
-				String[] parts = line.split(" ");
-				List<Integer> pos = new ArrayList<Integer>();
-				pos.add(Integer.parseInt(parts[1]));
-				pos.add(Integer.parseInt(parts[2]));
-			//System.out.println(pos);
-				
-				int key = Integer.parseInt(parts[0]);
-			//System.out.println(key);
+	// get the number of nodes
+	String topLine = in.nextLine();
 
-				coordinateMap.put(key, pos);
-			}
+	int numberOfNodes = Integer.parseInt(topLine);
+						
+	for(int i = 0; i < numberOfNodes; i++) {
+		String line = in.nextLine();
+	   
+		String[] parts = line.split(" ");
+		List<Integer> pos = new ArrayList<Integer>();
+		pos.add(Integer.parseInt(parts[1]));
+		pos.add(Integer.parseInt(parts[2]));
+	//System.out.println(pos);
+				
+		int key = Integer.parseInt(parts[0]);
+	//System.out.println(key);
+		
+		coordinateMap.put(key, pos);
 	}
+     }
 }

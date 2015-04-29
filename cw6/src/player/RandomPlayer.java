@@ -95,7 +95,7 @@ public class RandomPlayer implements Player{
 			}
 	}
 
-    //distance to ditectives
+    //distance to detectives
     public int distance(Set<Move> moves, int currentLocation, List<Colour> players){
 		List<Integer> pos = coordinateMap.get(currentLocation);
 		int score = 0;
@@ -131,9 +131,5 @@ public class RandomPlayer implements Player{
 				if(score > downRight) score = downRight;
 			}
 			return score;
-	}
-	
-	
-			
-		
+	}		
 }
