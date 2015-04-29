@@ -6,6 +6,8 @@ import scotlandyard.ScotlandYardView;
 import scotlandyard.ScotlandYard;
 import solution.ScotlandYardModel;
 
+import java.util.Timer;
+
 import scotlandyard.*;
 import java.io.*;
 
@@ -64,7 +66,7 @@ public class MyAIPlayer implements Player{
 
     public Move findbestMove(Map<Move, Integer> currentscore) {
     	Move bestmove = null;
-	System.out.println(currentscore.isEmpty());
+	//System.out.println(currentscore.isEmpty());
 	if (currentscore.isEmpty()) return bestmove;
 
 	int max = Integer.MIN_VALUE;
@@ -74,7 +76,7 @@ public class MyAIPlayer implements Player{
 			bestmove = move;
 		}
 	}
-	System.out.println("score: " + currentscore.get(bestmove));
+	//System.out.println("score: " + currentscore.get(bestmove));
 	return bestmove;
     }
 
@@ -95,6 +97,9 @@ public class MyAIPlayer implements Player{
 
     public Move Minimax(int location, Set<Move> moves, int depth) {
 
+	long startTime = System.nanoTime();    
+	long elapsedTime = 0;
+
 	Map<Move, Integer> boardscores = new HashMap<Move, Integer>();
 	for (Move move : moves) {
 		//recreate current game state
@@ -108,13 +113,17 @@ public class MyAIPlayer implements Player{
 		}
 		else if (move instanceof MoveDouble) choice = choice - 100;
 		boardscores.put(move, choice);
+
+	elapsedTime = System.nanoTime() - startTime;
+	double seconds = (double)elapsedTime / 1000000000.0;
+	if (seconds > 13) break;
     	}
 	return average(boardscores, location, moves);
     }
 
     public Move average(Map<Move, Integer> minimax, int location, Set<Move> moves) {
 	   Map<Move, Integer> one = onelookahead(this.view, location, moves);
-	   for (Move m : one.keySet()) {
+	   for (Move m : minimax.keySet()) {
 		one.put(m, minimax.get(m) + one.get(m));
 	   }
 	return findbestMove(one);
@@ -128,8 +137,16 @@ public class MyAIPlayer implements Player{
 	//assume detectives only get closer to MrX (else it is not an interesting move)
 	if (currentGame.getCurrentPlayer() != Colour.Black) {
 		int newDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
-		if ((newDistance - currentDistance) > 75) return (Integer.MIN_VALUE + 500);
-		if ((newDistance - currentDistance) > 30) return (Integer.MIN_VALUE + 1000);
+		//if ((newDistance - currentDistance) > 75) return (Integer.MIN_VALUE + 500);
+		//if ((newDistance - currentDistance) > 30) return (Integer.MIN_VALUE + 1000);
+
+		if ((newDistance - currentDistance) > 30) {
+			Map<Move, Integer> quiescent = onelookahead(currentGame, currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), 
+								    currentGame.validMoves(currentGame.getCurrentPlayer()));
+		Move quiet = findbestMove(quiescent);
+		return quiescent.get(quiet);
+			
+		}
 	}
 	currentGame.nextPlayer();
 	Colour player = currentGame.getCurrentPlayer();
