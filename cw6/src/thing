@@ -1,0 +1,18 @@
+Detective helper (is it an observer
+
+protected boolean start = true;
+protected Graph currentGraph;
+protected List<Integer> possibleroute;
+
+if (start) {
+possibleroute = new ArrayList<Integer>();
+for (Edge e :currrentGraph.getEdges()) {
+	if (Ticket)e.data() == move.ticket) possibleroute.add((int)e.target());
+}
+start = false;
+}
+else {
+	for (Integer i: possibleroute) {
+	getEdgesFrom(X nodeVal);
+	}
+}
