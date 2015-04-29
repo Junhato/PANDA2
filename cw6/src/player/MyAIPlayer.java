@@ -36,7 +36,6 @@ public class MyAIPlayer implements Player{
 
     @Override
     public Move notify(int location, Set<Move> moves){
-
 	this.nbofplayers = view.getPlayers().size();
 	//what happens if there is no move available??
 	//is there (always) a pass move provided??
@@ -54,7 +53,7 @@ public class MyAIPlayer implements Player{
 
 	//evaluate current situation (Min-Max)
 		long startTime = System.nanoTime();    
-		Move themove = Minimax(location, moves, 1);
+		Move themove = Minimax(location, moves, (8-nbofplayers)*nbofplayers);
 		long elapsedTime = System.nanoTime() - startTime;
 		double seconds = (double)elapsedTime / 1000000000.0;
 		System.out.println(seconds);
@@ -75,6 +74,7 @@ public class MyAIPlayer implements Player{
 			bestmove = move;
 		}
 	}
+	System.out.println("score: " + currentscore.get(bestmove));
 	return bestmove;
     }
 
@@ -109,18 +109,27 @@ public class MyAIPlayer implements Player{
 		else if (move instanceof MoveDouble) choice = choice - 100;
 		boardscores.put(move, choice);
     	}
-	return findbestMove(boardscores);
+	return average(boardscores, location, moves);
+    }
+
+    public Move average(Map<Move, Integer> minimax, int location, Set<Move> moves) {
+	   Map<Move, Integer> one = onelookahead(this.view, location, moves);
+	   for (Move m : one.keySet()) {
+		one.put(m, minimax.get(m) + one.get(m));
+	   }
+	return findbestMove(one);
     }
 
     public int MaxMove(Move move, int depth, ScotlandYardModel currentGame, int alpha, int beta) {
 
 	int currentDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
-	//detectives only get closer to MrX (else it is not an interesting move)
 	if (move instanceof MoveDouble) currentGame.play((MoveDouble)move);
 	if (move instanceof MoveTicket) currentGame.play((MoveTicket)move);
+	//assume detectives only get closer to MrX (else it is not an interesting move)
 	if (currentGame.getCurrentPlayer() != Colour.Black) {
 		int newDistance = distancetoMrX(currentGame.getPlayerLocation(currentGame.getCurrentPlayer()), currentGame.getPlayerLocation(Colour.Black));
-		if (Math.abs(currentDistance - newDistance) > 30) return (Integer.MIN_VALUE + 1000);
+		if ((newDistance - currentDistance) > 75) return (Integer.MIN_VALUE + 500);
+		if ((newDistance - currentDistance) > 30) return (Integer.MIN_VALUE + 1000);
 	}
 	currentGame.nextPlayer();
 	Colour player = currentGame.getCurrentPlayer();
